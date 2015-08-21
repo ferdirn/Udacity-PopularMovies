@@ -10,6 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="@string/movie_title"
+        android:paddingLeft="@dimen/padding_medium"
+        android:paddingTop="@dimen/padding_medium"
+        android:paddingBottom="@dimen/padding_medium"
+        android:textSize="@dimen/text_extra_large"
         />
 
     <LinearLayout
