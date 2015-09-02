@@ -1,30 +1,55 @@
 package com.aldoapps.popularmovies;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainFragment extends Fragment {
 
-    private RecyclerView mRecyclerView;
-    private MovieListAdapter mAdapter;
-    private StaggeredGridLayoutManager mLayoutManager;
+    @Bind(R.id.grid_view) GridView mGridView;
+
+    private MoviePosterAdapter mAdapter;
+    private List<Movie> mMovieList;
 
     public MainFragment() {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mMovieList = new ArrayList<>();
+        mMovieList.add(new Movie("http://lorempixel.com/400/200/cats",
+                "Chappie", "asdf", "asdf", 1f, "asdf"));
+        mMovieList.add(new Movie("http://lorempixel.com/200/300/cats",
+                "Kucing", "asdf", "asdf", 1f, "asdf"));
+
+        mAdapter = new MoviePosterAdapter(getActivity(), mMovieList);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_main, container, false);
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.movie_list);
-        return v;
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.bind(this, view);
+
+        mGridView.setAdapter(mAdapter);
+
+        return view;
     }
 }
