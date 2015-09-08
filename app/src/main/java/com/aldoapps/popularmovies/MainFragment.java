@@ -13,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,25 +56,24 @@ public class MainFragment extends Fragment {
 
     private void executeMovieTask() {
         FetchMovieTask fetchMovieTask  = new FetchMovieTask();
-        fetchMovieTask.execute(Constants.MovieValue.SORT_BY_HIGHEST_RATED_DESC);
+        fetchMovieTask.execute(Movie.SORT_BY_HIGHEST_RATED_DESC);
     }
 
     public String generateDiscoverUrl(String sortByValue){
 
-        final String DISCOVER_BASE_URL = "http://api.themoviedb.org/3/discover/movie";
+        Uri.Builder builder = Uri.parse(Movie.DISCOVER_BASE_URL).buildUpon()
+                .appendQueryParameter(Movie.SORT_BY_PARAM, sortByValue)
+                .appendQueryParameter(Movie.API_KEY_PARAM, getResources().getString(R.string.API_KEY));
 
-        // optional param
-        final String SORT_BY_PARAM = "sort_by";
-        final String SORT_BY_VALUE = sortByValue;
+        // sort by highest rated, require another two parameter
+        // average votes and vote count (to make sure its not some
+        // random movie with only a few people rate it 10) minimum of 1000 people
+        if(sortByValue.equals(Movie.SORT_BY_HIGHEST_RATED_DESC)){
+            builder.appendQueryParameter(Movie.VOTE_AVERAGE_PARAM, Movie.VOTE_AVERAGE_VALUE)
+                    .appendQueryParameter(Movie.VOTE_COUNT_PARAM, Movie.VOTE_COUNT_VALUE);
+        }
 
-        // required param
-        final String API_KEY_PARAM = "api_key";
-        final String API_KEY_VALUE = getResources().getString(R.string.API_KEY);
-
-        Uri uri = Uri.parse(DISCOVER_BASE_URL).buildUpon()
-                .appendQueryParameter(SORT_BY_PARAM, SORT_BY_VALUE)
-                .appendQueryParameter(API_KEY_PARAM, API_KEY_VALUE)
-                .build();
+        Uri uri = builder.build();
 
         Log.d("asdf", uri.toString());
 
@@ -80,11 +83,8 @@ public class MainFragment extends Fragment {
     public String generatePosterUrl(String posterPath){
         // example final image URL
         // http://image.tmdb.org/t/p/w185/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg
-        final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
-        final String POSTER_SIZE_PARAM = "/w185";
-
-        Log.d("asdf", IMAGE_BASE_URL + POSTER_SIZE_PARAM + posterPath);
-        return IMAGE_BASE_URL + POSTER_SIZE_PARAM + posterPath;
+        Log.d("asdf", Movie.IMAGE_BASE_URL + Movie.POSTER_SIZE_PARAM + posterPath);
+        return Movie.IMAGE_BASE_URL + Movie.POSTER_SIZE_PARAM + posterPath;
     }
 
     @Override
@@ -173,10 +173,35 @@ public class MainFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(String jsonString) {
+            super.onPostExecute(jsonString);
 
-            Log.d("asdf", "hasil: " + s);
+            Log.d("asdf", "hasil: " + jsonString);
+            convertJsonToMovies(jsonString);
+            mAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void convertJsonToMovies(String jsonString) {
+        try {
+            JSONObject rootObject = new JSONObject(jsonString);
+            JSONArray movieList = rootObject.getJSONArray(Movie.MOVIE_ARRAY);
+
+            for(int i = 0; i < movieList.length(); i++){
+                Movie movie = new Movie();
+                JSONObject movieObject = movieList.getJSONObject(i);
+                movie.setPosterUrl(generatePosterUrl(movieObject.getString(Movie.MOVIE_POSTER)));
+                movie.setName(movieObject.getString(Movie.MOVIE_ORIGINAL_TITLE));
+                movie.setScore(Float.parseFloat(movieObject.getString(Movie.MOVIE_SCORE)));
+                movie.setYear(movieObject.getString(Movie.MOVIE_RELEASE_DATE));
+                mMovieList.add(movie);
+
+                Log.d("asdf", "movie poster url " + movie.getPosterUrl());
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -5,9 +5,4 @@ package com.aldoapps.popularmovies;
  */
 public class Constants {
 
-    public static class MovieValue{
-        public static final String SORT_BY_POPULARITY_DESC = "popularity.desc";
-        public static final String SORT_BY_HIGHEST_RATED_DESC = "vote_average.desc";
-
-    }
 }
