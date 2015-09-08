@@ -4,12 +4,12 @@ package com.aldoapps.popularmovies;
  * Created by user on 01/09/2015.
  */
 public class Movie {
-    private String posterUrl;
-    private String name;
-    private String year;
-    private String duration;
-    private float score;
-    private String summary;
+    private String posterUrl; // poster_path
+    private String name; // original_title
+    private String year; // release date, parse it
+    private String duration; // nonexistent
+    private float score; // vote_average
+    private String summary; // overview
 
     public Movie(String posterUrl, String name, String year, String duration, float score, String summary) {
         this.posterUrl = posterUrl;

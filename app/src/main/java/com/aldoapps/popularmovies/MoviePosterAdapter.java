@@ -68,8 +68,6 @@ public class MoviePosterAdapter extends BaseAdapter{
 
         cell.movieName.setText(movie.getName());
 
-        Log.d("asdf", "movie poster url" + mMovies.get(position).getPosterUrl());
-
         return convertView;
     }
 

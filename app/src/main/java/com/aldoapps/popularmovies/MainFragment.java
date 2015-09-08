@@ -1,22 +1,22 @@
 package com.aldoapps.popularmovies;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,7 +34,7 @@ public class MainFragment extends Fragment {
     @Bind(R.id.grid_view) GridView mGridView;
 
     private MoviePosterAdapter mAdapter;
-    private List<Movie> mMovieList;
+    private List<Movie> mMovieList = new ArrayList<>();;
 
     public MainFragment() {
     }
@@ -43,44 +43,48 @@ public class MainFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mMovieList = new ArrayList<>();
-        mMovieList.add(new Movie("http://lorempixel.com/400/200/cats",
-                "Chappie", "asdf", "asdf", 1f, "asdf"));
-        mMovieList.add(new Movie("http://lorempixel.com/200/300/cats",
-                "Kucing", "asdf", "asdf", 1f, "asdf"));
+        executeMovieTask();
 
-        // HttpURLConnection is recommended HTTP Client for Android
-        HttpURLConnection httpURLConnection = null;
-        // Buffered Reader is used for read the byte you get from API
-        BufferedReader reader = null;
-
-        try {
-            // use URL builder to prevent mistakes and convenience
-            URL url = new URL(buildUrl());
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+        generatePosterUrl("/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg");
 
         mAdapter = new MoviePosterAdapter(getActivity(), mMovieList);
     }
 
-    public String buildUrl(){
-        final String BASE_URL = "http://image.tmdb.org/t/p";
-        final String POSTER_SIZE_PARAM = "w185";
-        // example final image URL
-        // http://image.tmdb.org/t/p/w185/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg
-        final String QUERY_PARAM = "query";
+    private void executeMovieTask() {
+        FetchMovieTask fetchMovieTask  = new FetchMovieTask();
+        fetchMovieTask.execute(Constants.MovieValue.SORT_BY_HIGHEST_RATED_DESC);
+    }
 
+    public String generateDiscoverUrl(String sortByValue){
 
-        Uri uri = Uri.parse(BASE_URL).buildUpon()
-                .appendQueryParameter(QUERY_PARAM, "something")
+        final String DISCOVER_BASE_URL = "http://api.themoviedb.org/3/discover/movie";
+
+        // optional param
+        final String SORT_BY_PARAM = "sort_by";
+        final String SORT_BY_VALUE = sortByValue;
+
+        // required param
+        final String API_KEY_PARAM = "api_key";
+        final String API_KEY_VALUE = getResources().getString(R.string.API_KEY);
+
+        Uri uri = Uri.parse(DISCOVER_BASE_URL).buildUpon()
+                .appendQueryParameter(SORT_BY_PARAM, SORT_BY_VALUE)
+                .appendQueryParameter(API_KEY_PARAM, API_KEY_VALUE)
                 .build();
 
+        Log.d("asdf", uri.toString());
+
         return uri.toString();
+    }
+
+    public String generatePosterUrl(String posterPath){
+        // example final image URL
+        // http://image.tmdb.org/t/p/w185/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg
+        final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
+        final String POSTER_SIZE_PARAM = "/w185";
+
+        Log.d("asdf", IMAGE_BASE_URL + POSTER_SIZE_PARAM + posterPath);
+        return IMAGE_BASE_URL + POSTER_SIZE_PARAM + posterPath;
     }
 
     @Override
@@ -93,12 +97,86 @@ public class MainFragment extends Fragment {
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getActivity(), DetailActivity.class);
-//                startActivity(intent);
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                startActivity(intent);
             }
         });
 
         return view;
+    }
+
+    public class FetchMovieTask extends AsyncTask<String, Void, String>{
+
+        public final String TAG = FetchMovieTask.class.getSimpleName();
+
+        @Override
+        protected String doInBackground(String... params) {
+            // for now, we didn't put any params
+            // but later we will add params for sorting
+            // most popular or highest rated
+            if(params.length == 0){
+                return null;
+            }
+
+            // HttpURLConnection is recommended HTTP Client for Android
+            HttpURLConnection httpURLConnection = null;
+            // Buffered Reader is used for read the byte you get from API
+            BufferedReader reader = null;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            try {
+                // use URL builder to prevent mistakes and convenience
+                URL url = new URL(generateDiscoverUrl(params[0]));
+                httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("GET"); // by default its GET though
+                httpURLConnection.connect();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+
+                // if response is null, exit
+                if(inputStream == null){
+                    return null;
+                }
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while((line = reader.readLine()) != null){
+                    stringBuilder.append(line).append(" \n");
+                }
+
+                // if string is empty, we can't parse it anyway
+                if(stringBuilder.length() == 0){
+                    return null;
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }finally {
+                // disconnect and close
+                // this stuff is auto generated by lint police
+                if (httpURLConnection != null) {
+                    httpURLConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            return stringBuilder.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            Log.d("asdf", "hasil: " + s);
+        }
     }
 }
