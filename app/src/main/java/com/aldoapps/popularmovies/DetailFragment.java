@@ -34,8 +34,11 @@ public class DetailFragment extends Fragment {
 
     public static final String TAG = DetailFragment.class.getSimpleName();
 
-    public static DetailFragment newInstance(){
+    public static DetailFragment newInstance(Movie movie){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Movie.KEY, movie);
         DetailFragment fragment = new DetailFragment();
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -43,6 +46,9 @@ public class DetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(getArguments() != null){
+            mMovie = getArguments().getParcelable(Movie.KEY);
+        }
     }
 
     @Nullable
@@ -50,9 +56,6 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
-
-        mMovie = new Movie("http://www.impawards.com/2015/posters/chappie_ver4.jpg",
-                "Chappie", "2015", "120 minutes", 8.5f, "Something long");
 
         Glide.with(this).load(mMovie.getPosterUrl()).into(mPoster);
         mName.setText(mMovie.getName());

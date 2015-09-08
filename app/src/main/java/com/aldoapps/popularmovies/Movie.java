@@ -1,9 +1,14 @@
 package com.aldoapps.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by user on 01/09/2015.
  */
-public class Movie {
+public class Movie implements Parcelable{
+
+    public static final String KEY = "movie";
 
     public static final String DISCOVER_BASE_URL = "http://api.themoviedb.org/3/discover/movie";
 
@@ -43,6 +48,39 @@ public class Movie {
         this.score = score;
         this.summary = summary;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.posterUrl);
+        dest.writeString(this.name);
+        dest.writeString(this.year);
+        dest.writeString(this.duration);
+        dest.writeFloat(this.score);
+        dest.writeString(this.summary);
+    }
+
+    public Movie(Parcel in) {
+        this.posterUrl = in.readString();
+        this.name = in.readString();
+        this.year = in.readString();
+        this.duration = in.readString();
+        this.score = in.readFloat();
+        this.summary = in.readString();
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR =
+            new Parcelable.Creator<Movie>(){
+
+                @Override
+                public Movie createFromParcel(Parcel source) {
+                    return new Movie(source);
+                }
+
+                @Override
+                public Movie[] newArray(int size) {
+                    return new Movie[size];
+                }
+            };
 
     public Movie() { }
 
@@ -93,4 +131,10 @@ public class Movie {
     public void setSummary(String summary) {
         this.summary = summary;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
 }

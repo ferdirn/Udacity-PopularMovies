@@ -14,8 +14,12 @@ public class DetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_detail);
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, DetailFragment.newInstance(), DetailFragment.TAG)
-                .commit();
+        if(getIntent() != null){
+            Bundle bundle = getIntent().getExtras();
+            Movie movie = bundle.getParcelable(Movie.KEY);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, DetailFragment.newInstance(movie), DetailFragment.TAG)
+                    .commit();
+        }
     }
 }
