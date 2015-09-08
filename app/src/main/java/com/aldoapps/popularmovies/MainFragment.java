@@ -195,6 +195,7 @@ public class MainFragment extends Fragment {
                 movie.setName(movieObject.getString(Movie.MOVIE_ORIGINAL_TITLE));
                 movie.setScore(Float.parseFloat(movieObject.getString(Movie.MOVIE_SCORE)));
                 movie.setYear(movieObject.getString(Movie.MOVIE_RELEASE_DATE));
+                movie.setSummary(movieObject.getString(Movie.MOVIE_OVERVIEW));
                 mMovieList.add(movie);
 
                 Log.d("asdf", "movie poster url " + movie.getPosterUrl());
