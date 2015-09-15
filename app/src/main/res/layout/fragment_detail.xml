@@ -80,6 +80,10 @@
         android:layout_height="wrap_content"
         tools:text="@string/movie_summary"
         android:padding="@dimen/padding_small"
+        android:maxLength="200"
+        android:singleLine="false"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
         />
 
     <!-- Horizontal line -->

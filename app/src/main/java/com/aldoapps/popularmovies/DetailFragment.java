@@ -1,5 +1,6 @@
 package com.aldoapps.popularmovies;
 
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.mark_as_favorite) Button mMarkAsFavorite;
 
     private Movie mMovie;
+    private ProgressDialog mProgressDialog;
 
     public static final String TAG = DetailFragment.class.getSimpleName();
 
@@ -59,6 +61,9 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage(getString(R.string.please_wait));
 
         if(getArguments() != null){
             mMovie = getArguments().getParcelable(Movie.KEY);
@@ -102,10 +107,19 @@ public class DetailFragment extends Fragment {
     public class FetchMovieDetail extends AsyncTask<String, Void, String>{
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            mProgressDialog.show();
+        }
+
+        @Override
         protected void onPostExecute(String jsonString) {
             super.onPostExecute(jsonString);
 
             setMovieRating(jsonString);
+
+            mProgressDialog.hide();
         }
 
         @Override

@@ -11,4 +11,6 @@
     <string name="trailers">Trailers:</string>
     <string name="API_KEY">bc038bb869a181d827bb98836dadeb23</string>
     <string name="detail_activity">Detail Activity</string>
+    <string name="sort_by">Sort By</string>
+    <string name="please_wait">Please wait..</string>
 </resources>
