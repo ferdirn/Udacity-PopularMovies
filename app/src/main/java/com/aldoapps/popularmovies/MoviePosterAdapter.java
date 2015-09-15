@@ -64,7 +64,6 @@ public class MoviePosterAdapter extends BaseAdapter{
         Glide.with(mContext).load(movie.getPosterUrl()).into(
                 cell.moviePoster
         );
-//        Glide.with(mContext).load("http://goo.gl/gEgYUd").into(cell.moviePoster);
 
         cell.movieName.setText(movie.getName());
 

@@ -57,13 +57,9 @@ public class MainFragment extends Fragment {
 
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setMessage(getString(R.string.please_wait));
-
-        executeMovieTask();
-
-        generatePosterUrl("/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg");
-
         mAdapter = new MoviePosterAdapter(getActivity(), mMovieList);
 
+        executeMovieTask();
     }
 
     @Override
@@ -141,15 +137,12 @@ public class MainFragment extends Fragment {
 
         Uri uri = builder.build();
 
-        Log.d("asdf", uri.toString());
-
         return uri.toString();
     }
 
     public String generatePosterUrl(String posterPath){
         // example final image URL
         // http://image.tmdb.org/t/p/w185/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg
-        Log.d("asdf", Movie.IMAGE_BASE_URL + Movie.POSTER_SIZE_PARAM + posterPath);
         return Movie.IMAGE_BASE_URL + Movie.POSTER_SIZE_PARAM + posterPath;
     }
 
@@ -186,13 +179,6 @@ public class MainFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-            // for now, we didn't put any params
-            // but later we will add params for sorting
-            // most popular or highest rated
-            if(params.length == 0){
-                return null;
-            }
-
             // HttpURLConnection is recommended HTTP Client for Android
             HttpURLConnection httpURLConnection = null;
             // Buffered Reader is used for read the byte you get from API
