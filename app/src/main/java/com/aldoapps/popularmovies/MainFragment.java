@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,8 +54,8 @@ public class MainFragment extends Fragment {
     }
 
     private void executeMovieTask() {
-        FetchMovieTask fetchMovieTask  = new FetchMovieTask();
-        fetchMovieTask.execute(Movie.SORT_BY_HIGHEST_RATED_DESC);
+        FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
+        fetchMoviesTask.execute(Movie.SORT_BY_HIGHEST_RATED_DESC);
     }
 
     public String generateDiscoverUrl(String sortByValue){
@@ -106,9 +105,9 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, String>{
+    public class FetchMoviesTask extends AsyncTask<String, Void, String>{
 
-        public final String TAG = FetchMovieTask.class.getSimpleName();
+        public final String TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
         protected String doInBackground(String... params) {
@@ -118,6 +117,7 @@ public class MainFragment extends Fragment {
             if(params.length == 0){
                 return null;
             }
+
 
             // HttpURLConnection is recommended HTTP Client for Android
             HttpURLConnection httpURLConnection = null;
@@ -191,14 +191,13 @@ public class MainFragment extends Fragment {
             for(int i = 0; i < movieList.length(); i++){
                 Movie movie = new Movie();
                 JSONObject movieObject = movieList.getJSONObject(i);
+                movie.setId(movieObject.getString(Movie.MOVIE_ID));
                 movie.setPosterUrl(generatePosterUrl(movieObject.getString(Movie.MOVIE_POSTER)));
                 movie.setName(movieObject.getString(Movie.MOVIE_ORIGINAL_TITLE));
                 movie.setScore(Float.parseFloat(movieObject.getString(Movie.MOVIE_SCORE)));
                 movie.setYear(movieObject.getString(Movie.MOVIE_RELEASE_DATE));
                 movie.setSummary(movieObject.getString(Movie.MOVIE_OVERVIEW));
                 mMovieList.add(movie);
-
-                Log.d("asdf", "movie poster url " + movie.getPosterUrl());
             }
 
         } catch (JSONException e) {

@@ -10,7 +10,10 @@ public class Movie implements Parcelable{
 
     public static final String KEY = "movie";
 
-    public static final String DISCOVER_BASE_URL = "http://api.themoviedb.org/3/discover/movie";
+    public static final String BASE_URL = "http://api.themoviedb.org/3/";
+
+    public static final String MOVIE_DETAIL_BASE_URL = BASE_URL + "movie/";
+    public static final String DISCOVER_BASE_URL = BASE_URL + "discover/movie";
 
     public static final String SORT_BY_PARAM = "sort_by";
     public static final String API_KEY_PARAM = "api_key";
@@ -26,21 +29,25 @@ public class Movie implements Parcelable{
     public static final String POSTER_SIZE_PARAM = "/w185";
 
     // JSON stuff
+    public static final String MOVIE_ID = "id";
     public static final String MOVIE_ARRAY = "results";
     public static final String MOVIE_POSTER = "poster_path";
     public static final String MOVIE_ORIGINAL_TITLE = "original_title";
+    public static final String MOVIE_RUNTIME = "runtime";
     public static final String MOVIE_OVERVIEW = "overview";
     public static final String MOVIE_RELEASE_DATE = "release_date";
     public static final String MOVIE_SCORE = "vote_average";
 
+    private String id;
     private String posterUrl; // poster_path
     private String name; // original_title
     private String year; // release date, parse it
-    private String duration; // nonexistent
+    private String duration; // get complete movie data from querying movie id
     private float score; // vote_average
     private String summary; // overview
 
-    public Movie(String posterUrl, String name, String year, String duration, float score, String summary) {
+    public Movie(String id, String posterUrl, String name, String year, String duration, float score, String summary) {
+        this.id = id;
         this.posterUrl = posterUrl;
         this.name = name;
         this.year = year;
@@ -51,6 +58,7 @@ public class Movie implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
         dest.writeString(this.posterUrl);
         dest.writeString(this.name);
         dest.writeString(this.year);
@@ -60,6 +68,7 @@ public class Movie implements Parcelable{
     }
 
     public Movie(Parcel in) {
+        this.id = in.readString();
         this.posterUrl = in.readString();
         this.name = in.readString();
         this.year = in.readString();
@@ -122,6 +131,14 @@ public class Movie implements Parcelable{
 
     public void setScore(float score) {
         this.score = score;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSummary() {
