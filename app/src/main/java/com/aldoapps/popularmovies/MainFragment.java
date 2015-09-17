@@ -2,11 +2,15 @@ package com.aldoapps.popularmovies;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,8 +50,16 @@ public class MainFragment extends Fragment {
     private MoviePosterAdapter mAdapter;
     private List<Movie> mMovieList = new ArrayList<>();
     private ProgressDialog mProgressDialog;
+    private Context mContext;
 
     public MainFragment() {
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        mContext = context;
     }
 
     @Override
@@ -55,11 +67,7 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage(getString(R.string.please_wait));
         mAdapter = new MoviePosterAdapter(getActivity(), mMovieList);
-
-        executeMovieTask();
     }
 
     @Override
@@ -91,7 +99,7 @@ public class MainFragment extends Fragment {
         builder.setItems(R.array.sort_by_array, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (which){
+                switch (which) {
                     case 0:
                         executeMovieTask(Movie.SORT_BY_POPULARITY_DESC);
                         break;
@@ -104,21 +112,54 @@ public class MainFragment extends Fragment {
         builder.show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        executeMovieTask();
+    }
+
     private void executeMovieTask() {
         // default by popularity
         executeMovieTask(Movie.SORT_BY_POPULARITY_DESC);
     }
 
     private void executeMovieTask(String sortBy) {
-        FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
-        switch (sortBy){
-            case Movie.SORT_BY_HIGHEST_RATED_DESC:
-                fetchMoviesTask.execute(Movie.SORT_BY_HIGHEST_RATED_DESC);
-                break;
-            case Movie.SORT_BY_POPULARITY_DESC:
-                fetchMoviesTask.execute(Movie.SORT_BY_POPULARITY_DESC);
-                break;
+        if(isNetworkAvailable()){
+            FetchMoviesTask fetchMoviesTask = new FetchMoviesTask();
+            switch (sortBy){
+                case Movie.SORT_BY_HIGHEST_RATED_DESC:
+                    fetchMoviesTask.execute(Movie.SORT_BY_HIGHEST_RATED_DESC);
+                    break;
+                case Movie.SORT_BY_POPULARITY_DESC:
+                    fetchMoviesTask.execute(Movie.SORT_BY_POPULARITY_DESC);
+                    break;
+            }
+        }else{
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.no_internet_message)
+                    .setTitle(R.string.no_internet_title)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+            builder.show();
         }
+    }
+
+    private boolean isNetworkAvailable(){
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public String generateDiscoverUrl(String sortByValue){
@@ -165,6 +206,13 @@ public class MainFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mProgressDialog.dismiss();
+    }
+
     public class FetchMoviesTask extends AsyncTask<String, Void, String>{
 
         public final String TAG = FetchMoviesTask.class.getSimpleName();
@@ -174,6 +222,9 @@ public class MainFragment extends Fragment {
             super.onPreExecute();
 
             mMovieList.clear();
+
+            mProgressDialog = new ProgressDialog(mContext);
+            mProgressDialog.setMessage(getString(R.string.please_wait));
             mProgressDialog.show();
         }
 
@@ -239,8 +290,8 @@ public class MainFragment extends Fragment {
 
             convertJsonToMovies(jsonString);
             mAdapter.notifyDataSetChanged();
-
-            mProgressDialog.hide();
+            if(mProgressDialog != null && mProgressDialog.isShowing())
+                mProgressDialog.dismiss();
         }
     }
 
