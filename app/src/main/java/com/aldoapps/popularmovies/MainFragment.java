@@ -49,17 +49,8 @@ public class MainFragment extends Fragment {
 
     private MoviePosterAdapter mAdapter;
     private List<Movie> mMovieList = new ArrayList<>();
-    private ProgressDialog mProgressDialog;
-    private Context mContext;
 
     public MainFragment() {
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        mContext = context;
     }
 
     @Override
@@ -206,13 +197,6 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        mProgressDialog.dismiss();
-    }
-
     public class FetchMoviesTask extends AsyncTask<String, Void, String>{
 
         public final String TAG = FetchMoviesTask.class.getSimpleName();
@@ -222,10 +206,6 @@ public class MainFragment extends Fragment {
             super.onPreExecute();
 
             mMovieList.clear();
-
-            mProgressDialog = new ProgressDialog(mContext);
-            mProgressDialog.setMessage(getString(R.string.please_wait));
-            mProgressDialog.show();
         }
 
         @Override
@@ -290,8 +270,6 @@ public class MainFragment extends Fragment {
 
             convertJsonToMovies(jsonString);
             mAdapter.notifyDataSetChanged();
-            if(mProgressDialog != null && mProgressDialog.isShowing())
-                mProgressDialog.dismiss();
         }
     }
 

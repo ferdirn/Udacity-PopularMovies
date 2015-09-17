@@ -15,10 +15,9 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         if(getIntent() != null){
-            Bundle bundle = getIntent().getExtras();
-            Movie movie = bundle.getParcelable(Movie.KEY);
+            Movie movie = getIntent().getParcelableExtra(Movie.KEY);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, DetailFragment.newInstance(movie), DetailFragment.TAG)
+                    .add(R.id.container, DetailFragment.newInstance(movie), DetailFragment.TAG)
                     .commit();
         }
     }

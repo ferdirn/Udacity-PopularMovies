@@ -47,8 +47,6 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.mark_as_favorite) Button mMarkAsFavorite;
 
     private Movie mMovie;
-    private ProgressDialog mProgressDialog;
-    private Context mContext;
 
     public static final String TAG = DetailFragment.class.getSimpleName();
 
@@ -58,13 +56,6 @@ public class DetailFragment extends Fragment {
         DetailFragment fragment = new DetailFragment();
         fragment.setArguments(bundle);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        mContext = context;
     }
 
     @Override
@@ -103,41 +94,20 @@ public class DetailFragment extends Fragment {
 
         Uri.Builder builder = Uri.parse(Movie.MOVIE_DETAIL_BASE_URL + movieId).buildUpon()
                 .appendQueryParameter(Movie.API_KEY_PARAM,
-                        getActivity().getResources().getString(R.string.API_KEY));
+                        getString(R.string.API_KEY));
 
         Uri uri = builder.build();
 
         return uri.toString();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        mProgressDialog.dismiss();
-    }
-
     public class FetchMovieDetail extends AsyncTask<String, Void, String>{
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            mProgressDialog = new ProgressDialog(mContext);
-            mProgressDialog.setMessage(getString(R.string.please_wait));
-
-            if(mProgressDialog != null && !mProgressDialog.isShowing())
-                mProgressDialog.show();
-        }
 
         @Override
         protected void onPostExecute(String jsonString) {
             super.onPostExecute(jsonString);
 
             setMovieRating(jsonString);
-
-            if(mProgressDialog != null && mProgressDialog.isShowing())
-                mProgressDialog.dismiss();
         }
 
         @Override
@@ -148,7 +118,6 @@ public class DetailFragment extends Fragment {
             StringBuilder sb = new StringBuilder();
 
             try {
-                Log.d("asdf", "hasil url " + generateGetMovieDetailUrl(params[0]));
                 URL url = new URL(generateGetMovieDetailUrl(params[0]));
                 httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("GET");
