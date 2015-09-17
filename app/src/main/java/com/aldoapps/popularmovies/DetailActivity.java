@@ -16,9 +16,20 @@ public class DetailActivity extends AppCompatActivity {
 
         if(getIntent() != null){
             Movie movie = getIntent().getParcelableExtra(Movie.KEY);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, DetailFragment.newInstance(movie), DetailFragment.TAG)
-                    .commit();
+            startDetailFragment(movie);
         }
+    }
+
+    private void startDetailFragment(Movie movie){
+        DetailFragment fragment = (DetailFragment)
+                getSupportFragmentManager().findFragmentByTag(DetailFragment.TAG);
+
+        if(fragment == null){
+            fragment = DetailFragment.newInstance(movie);
+        }
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment, DetailFragment.TAG)
+                .commit();
     }
 }

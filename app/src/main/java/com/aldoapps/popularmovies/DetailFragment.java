@@ -85,9 +85,21 @@ public class DetailFragment extends Fragment {
         mSummary.setText(mMovie.getSummary());
         mRating.setText(String.valueOf(mMovie.getScore()) + " / 10");
 
-        executeFetchMovieDetail(mMovie.getId());
+        // if we already querying movie runtime, use restored bundle
+        if(savedInstanceState != null){
+            mDuration.setText(savedInstanceState.getString(Movie.MOVIE_RUNTIME));
+        }else{
+            executeFetchMovieDetail(mMovie.getId());
+        }
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(Movie.MOVIE_RUNTIME, mMovie.getDuration());
     }
 
     public String generateGetMovieDetailUrl(String movieId){
@@ -164,7 +176,8 @@ public class DetailFragment extends Fragment {
     private void setMovieRating(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            mDuration.setText(jsonObject.getInt(Movie.MOVIE_RUNTIME) + " minutes");
+            mMovie.setDuration(String.valueOf(jsonObject.getInt(Movie.MOVIE_RUNTIME)) + " minutes");
+            mDuration.setText(mMovie.getDuration());
         } catch (JSONException e) {
             e.printStackTrace();
         }
