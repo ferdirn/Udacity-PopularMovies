@@ -9,10 +9,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aldoapps.popularmovies.model.Movie;
+import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -61,11 +62,13 @@ public class MoviePosterAdapter extends BaseAdapter{
             cell = (MovieViewHolder) convertView.getTag();
         }
 
-        Glide.with(mContext).load(movie.getPosterUrl()).into(
+        Log.d("asdf", "Ur");
+
+        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath())).into(
                 cell.moviePoster
         );
 
-        cell.movieName.setText(movie.getName());
+        cell.movieName.setText(movie.getOriginalTitle());
 
         return convertView;
     }

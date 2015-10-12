@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by user on 01/09/2015.
  */
-public class Movie implements Parcelable{
+public class MovieConst implements Parcelable{
 
     public static final String KEY = "movie";
 
@@ -46,7 +46,7 @@ public class Movie implements Parcelable{
     private float score; // vote_average
     private String summary; // overview
 
-    public Movie(String id, String posterUrl, String name, String year, String duration, float score, String summary) {
+    public MovieConst(String id, String posterUrl, String name, String year, String duration, float score, String summary) {
         this.id = id;
         this.posterUrl = posterUrl;
         this.name = name;
@@ -67,7 +67,7 @@ public class Movie implements Parcelable{
         dest.writeString(this.summary);
     }
 
-    public Movie(Parcel in) {
+    public MovieConst(Parcel in) {
         this.id = in.readString();
         this.posterUrl = in.readString();
         this.name = in.readString();
@@ -77,21 +77,21 @@ public class Movie implements Parcelable{
         this.summary = in.readString();
     }
 
-    public static final Parcelable.Creator<Movie> CREATOR =
-            new Parcelable.Creator<Movie>(){
+    public static final Parcelable.Creator<MovieConst> CREATOR =
+            new Parcelable.Creator<MovieConst>(){
 
                 @Override
-                public Movie createFromParcel(Parcel source) {
-                    return new Movie(source);
+                public MovieConst createFromParcel(Parcel source) {
+                    return new MovieConst(source);
                 }
 
                 @Override
-                public Movie[] newArray(int size) {
-                    return new Movie[size];
+                public MovieConst[] newArray(int size) {
+                    return new MovieConst[size];
                 }
             };
 
-    public Movie() { }
+    public MovieConst() { }
 
     public String getPosterUrl(){
         return posterUrl;

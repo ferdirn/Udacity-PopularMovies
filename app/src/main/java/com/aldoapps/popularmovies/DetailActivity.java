@@ -15,17 +15,17 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         if(getIntent() != null){
-            Movie movie = getIntent().getParcelableExtra(Movie.KEY);
-            startDetailFragment(movie);
+            String movieId = getIntent().getStringExtra(MovieConst.KEY);
+            startDetailFragment(movieId);
         }
     }
 
-    private void startDetailFragment(Movie movie){
+    private void startDetailFragment(String movieId){
         DetailFragment fragment = (DetailFragment)
                 getSupportFragmentManager().findFragmentByTag(DetailFragment.TAG);
 
         if(fragment == null){
-            fragment = DetailFragment.newInstance(movie);
+            fragment = DetailFragment.newInstance(movieId);
         }
 
         getSupportFragmentManager().beginTransaction()

@@ -1,13 +1,10 @@
 package com.aldoapps.popularmovies;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +14,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,13 +41,14 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.movie_summary) TextView mSummary;
     @Bind(R.id.mark_as_favorite) Button mMarkAsFavorite;
 
-    private Movie mMovie;
+    private MovieConst mMovieConst;
+    private String mMovieId = "";
 
     public static final String TAG = DetailFragment.class.getSimpleName();
 
-    public static DetailFragment newInstance(Movie movie){
+    public static DetailFragment newInstance(String movieId){
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Movie.KEY, movie);
+        bundle.putString(MovieConst.KEY, movieId);
         DetailFragment fragment = new DetailFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -63,7 +59,7 @@ public class DetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if(getArguments() != null){
-            mMovie = getArguments().getParcelable(Movie.KEY);
+            mMovieId = getArguments().getParcelable(MovieConst.KEY);
         }
     }
 
@@ -78,18 +74,18 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
 
-        Glide.with(this).load(mMovie.getPosterUrl()).into(mPoster);
-        mName.setText(mMovie.getName());
-        mYear.setText(mMovie.getYear());
-        mDuration.setText(mMovie.getDuration());
-        mSummary.setText(mMovie.getSummary());
-        mRating.setText(String.valueOf(mMovie.getScore()) + " / 10");
+        Glide.with(this).load(mMovieConst.getPosterUrl()).into(mPoster);
+        mName.setText(mMovieConst.getName());
+        mYear.setText(mMovieConst.getYear());
+        mDuration.setText(mMovieConst.getDuration());
+        mSummary.setText(mMovieConst.getSummary());
+        mRating.setText(String.valueOf(mMovieConst.getScore()) + " / 10");
 
         // if we already querying movie runtime, use restored bundle
         if(savedInstanceState != null){
-            mDuration.setText(savedInstanceState.getString(Movie.MOVIE_RUNTIME));
+            mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
         }else{
-            executeFetchMovieDetail(mMovie.getId());
+            executeFetchMovieDetail(mMovieConst.getId());
         }
 
         return view;
@@ -99,13 +95,13 @@ public class DetailFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(Movie.MOVIE_RUNTIME, mMovie.getDuration());
+        outState.putString(MovieConst.MOVIE_RUNTIME, mMovieConst.getDuration());
     }
 
     public String generateGetMovieDetailUrl(String movieId){
 
-        Uri.Builder builder = Uri.parse(Movie.MOVIE_DETAIL_BASE_URL + movieId).buildUpon()
-                .appendQueryParameter(Movie.API_KEY_PARAM,
+        Uri.Builder builder = Uri.parse(MovieConst.MOVIE_DETAIL_BASE_URL + movieId).buildUpon()
+                .appendQueryParameter(MovieConst.API_KEY_PARAM,
                         getString(R.string.API_KEY));
 
         Uri uri = builder.build();
@@ -176,8 +172,8 @@ public class DetailFragment extends Fragment {
     private void setMovieRating(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            mMovie.setDuration(String.valueOf(jsonObject.getInt(Movie.MOVIE_RUNTIME)) + " minutes");
-            mDuration.setText(mMovie.getDuration());
+            mMovieConst.setDuration(String.valueOf(jsonObject.getInt(MovieConst.MOVIE_RUNTIME)) + " minutes");
+            mDuration.setText(mMovieConst.getDuration());
         } catch (JSONException e) {
             e.printStackTrace();
         }
