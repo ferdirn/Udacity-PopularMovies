@@ -62,13 +62,13 @@ public class MoviePosterAdapter extends BaseAdapter{
             cell = (MovieViewHolder) convertView.getTag();
         }
 
-        Log.d("asdf", "Ur");
+        Log.d("asdf", "judul " + movie.poster_path + " full url " + UrlUtil.generatePosterUrl(movie.poster_path));
 
-        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath())).into(
+        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.poster_path)).into(
                 cell.moviePoster
         );
 
-        cell.movieName.setText(movie.getOriginalTitle());
+        cell.movieName.setText(movie.title);
 
         return convertView;
     }

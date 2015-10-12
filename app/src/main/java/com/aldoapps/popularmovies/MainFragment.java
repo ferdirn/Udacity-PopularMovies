@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
@@ -24,23 +22,7 @@ import android.widget.Toast;
 
 import com.aldoapps.popularmovies.model.DiscoverResponse;
 import com.aldoapps.popularmovies.model.Movie;
-import com.aldoapps.popularmovies.model.Result;
-import com.aldoapps.popularmovies.model.TmdbResponse;
-import com.aldoapps.popularmovies.util.MovieDeserializer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +30,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.GsonConverterFactory;
+import retrofit.MoshiConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
@@ -132,14 +114,14 @@ public class MainFragment extends Fragment {
 
     private void executeMovieTask(String sortBy) {
         if(isNetworkAvailable()){
-            Gson gson = new GsonBuilder()
-                    .setDateFormat("yyyy-MM-dd")
-                    .registerTypeAdapter(Movie.class, new MovieDeserializer())
-                    .create();
+//            Gson gson = new GsonBuilder()
+//                    .setDateFormat("yyyy-MM-dd")
+//                    .registerTypeAdapter(Movie.class, new MovieDeserializer())
+//                    .create();
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MovieConst.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .addConverterFactory(MoshiConverterFactory.create())
                     .build();
 
             TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
@@ -169,9 +151,10 @@ public class MainFragment extends Fragment {
                     public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
                         Log.d("asdf", "is resonpse null? " + (response.body() == null));
                         Log.d("asdf", "is success? " + response.isSuccess());
-                        Log.d("asdf", "base url " + retrofit.baseUrl().toString());
+                        Log.d("asdf", "movie :  " + response.body().results.get(0).title);
+                        Log.d("asdf", "poster url :  " + response.body().results.get(0).poster_path);
 
-                        mMovieList.addAll(response.body().getResults());
+                        mMovieList.addAll(response.body().results);
                         mAdapter.notifyDataSetChanged();
                     }
 
@@ -219,7 +202,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(MovieConst.KEY, mMovieList.get(position).getId());
+                intent.putExtra(MovieConst.KEY, mMovieList.get(position).id);
                 startActivity(intent);
             }
         });

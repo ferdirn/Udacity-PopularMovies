@@ -32,6 +32,6 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.6.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.1:'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.1'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+    compile 'com.squareup.retrofit:converter-moshi:2.0.0-beta2'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
 }

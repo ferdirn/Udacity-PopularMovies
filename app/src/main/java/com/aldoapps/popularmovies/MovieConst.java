@@ -10,7 +10,7 @@ public class MovieConst implements Parcelable{
 
     public static final String KEY = "movie";
 
-    public static final String BASE_URL = "http://api.themoviedb.org/3/";
+    public static final String BASE_URL = "http://api.themoviedb.org/";
 
     public static final String MOVIE_DETAIL_BASE_URL = BASE_URL + "movie/";
     public static final String DISCOVER_BASE_URL = BASE_URL + "discover/movie";

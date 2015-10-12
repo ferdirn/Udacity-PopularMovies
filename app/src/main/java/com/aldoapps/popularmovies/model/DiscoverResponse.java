@@ -1,52 +1,45 @@
 package com.aldoapps.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-/**
- * Created by user on 11/10/2015.
- */
-public class DiscoverResponse {
-    private int page;
-    private List<Movie> results;
-    private double total_pages;
-    private double total_results;
+public class DiscoverResponse implements Parcelable {
+    public int page;
+    public List<Movie> results;
+    public int totalPages;
+    public int totalResults;
 
-    public DiscoverResponse(int page, List<Movie> results, double total_pages, double total_results) {
-        this.page = page;
-        this.results = results;
-        this.total_pages = total_pages;
-        this.total_results = total_results;
+    protected DiscoverResponse(Parcel in) {
+        page = in.readInt();
+        results = in.createTypedArrayList(Movie.CREATOR);
+        totalPages = in.readInt();
+        totalResults = in.readInt();
     }
 
-    public double getTotal_pages() {
-        return total_pages;
+    public static final Creator<DiscoverResponse> CREATOR = new Creator<DiscoverResponse>() {
+        @Override
+        public DiscoverResponse createFromParcel(Parcel in) {
+            return new DiscoverResponse(in);
+        }
+
+        @Override
+        public DiscoverResponse[] newArray(int size) {
+            return new DiscoverResponse[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public void setTotal_pages(double total_pages) {
-        this.total_pages = total_pages;
-    }
-
-    public double getTotal_results() {
-        return total_results;
-    }
-
-    public void setTotal_results(double total_results) {
-        this.total_results = total_results;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public List<Movie> getResults() {
-        return results;
-    }
-
-    public void setResults(List<Movie> results) {
-        this.results = results;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(page);
+        dest.writeTypedList(results);
+        dest.writeInt(totalPages);
+        dest.writeInt(totalResults);
     }
 }

@@ -290,7 +290,7 @@ public class AnotherResponse {
         /**
          *
          * @return
-         * The releaseDate
+         * The release_date
          */
         public String getReleaseDate() {
             return releaseDate;
@@ -308,7 +308,7 @@ public class AnotherResponse {
         /**
          *
          * @return
-         * The posterPath
+         * The poster_path
          */
         public String getPosterPath() {
             return posterPath;
@@ -380,7 +380,7 @@ public class AnotherResponse {
         /**
          *
          * @return
-         * The voteAverage
+         * The vote_average
          */
         public int getVoteAverage() {
             return voteAverage;
@@ -398,7 +398,7 @@ public class AnotherResponse {
         /**
          *
          * @return
-         * The voteCount
+         * The vote_count
          */
         public int getVoteCount() {
             return voteCount;
