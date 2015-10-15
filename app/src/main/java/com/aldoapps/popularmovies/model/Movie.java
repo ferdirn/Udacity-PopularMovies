@@ -15,7 +15,6 @@ public class Movie implements Parcelable {
 
 
     public Movie(int id, String overview, String release_date, String poster_path, long popularity, String title, long vote_average, int vote_count) {
-
         this.id = id;
         this.overview = overview;
         this.release_date = release_date;
@@ -58,7 +57,6 @@ public class Movie implements Parcelable {
 
 
     public static Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
-
         @Override
         public Movie createFromParcel(Parcel source) {
             return new Movie(source);

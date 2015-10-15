@@ -129,14 +129,12 @@ public class MainFragment extends Fragment {
 
             switch (sortBy){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
-                    Log.d("asdf", "highest rated");
                     call = tmdbApi.discoverMovies(sortBy,
                             getResources().getString(R.string.API_KEY),
                             MovieConst.VOTE_AVERAGE_VALUE,
                             MovieConst.VOTE_COUNT_VALUE);
                     break;
                 case MovieConst.SORT_BY_POPULARITY_DESC:
-                    Log.d("asdf", "popularity");
                     call = tmdbApi.discoverMovies(sortBy,
                             getResources().getString(R.string.API_KEY)
                             );
@@ -145,15 +143,9 @@ public class MainFragment extends Fragment {
 
             if (call != null) {
                 mMovieList.clear();
-                Log.d("asdf", "2");
                 call.enqueue(new Callback<DiscoverResponse>() {
                     @Override
                     public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
-                        Log.d("asdf", "is resonpse null? " + (response.body() == null));
-                        Log.d("asdf", "is success? " + response.isSuccess());
-                        Log.d("asdf", "movie :  " + response.body().results.get(0).title);
-                        Log.d("asdf", "poster url :  " + response.body().results.get(0).poster_path);
-
                         mMovieList.addAll(response.body().results);
                         mAdapter.notifyDataSetChanged();
                     }
