@@ -1,7 +1,6 @@
 package com.aldoapps.popularmovies;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aldoapps.popularmovies.model.Movie;
+import com.aldoapps.popularmovies.model.Result;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
 
@@ -24,10 +23,10 @@ import butterknife.ButterKnife;
 public class MoviePosterAdapter extends BaseAdapter{
 
     private Context mContext;
-    private List<Movie> mMovies;
+    private List<Result> mMovies;
     private LayoutInflater mInflater;
 
-    public MoviePosterAdapter(Context context, List<Movie> movies){
+    public MoviePosterAdapter(Context context, List<Result> movies){
         mContext = context;
         mMovies = movies;
 
@@ -40,7 +39,7 @@ public class MoviePosterAdapter extends BaseAdapter{
     }
 
     @Override
-    public Movie getItem(int position) {
+    public Result getItem(int position) {
         return mMovies.get(position);
     }
 
@@ -52,7 +51,7 @@ public class MoviePosterAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         MovieViewHolder cell;
-        Movie movie = getItem(position);
+        Result movie = getItem(position);
 
         if(convertView == null){
             convertView = mInflater.inflate(R.layout.movie_poster_list_item, parent, false);
@@ -62,11 +61,11 @@ public class MoviePosterAdapter extends BaseAdapter{
             cell = (MovieViewHolder) convertView.getTag();
         }
 
-        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.poster_path)).into(
+        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath())).into(
                 cell.moviePoster
         );
 
-        cell.movieName.setText(movie.title);
+        cell.movieName.setText(movie.getTitle());
 
         return convertView;
     }

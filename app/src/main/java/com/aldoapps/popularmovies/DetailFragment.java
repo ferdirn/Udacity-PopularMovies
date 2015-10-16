@@ -74,18 +74,18 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
 
-        Glide.with(this).load(mMovieConst.getPosterUrl()).into(mPoster);
-        mName.setText(mMovieConst.getName());
-        mYear.setText(mMovieConst.getYear());
-        mDuration.setText(mMovieConst.getDuration());
-        mSummary.setText(mMovieConst.getSummary());
-        mRating.setText(String.valueOf(mMovieConst.getScore()) + " / 10");
+//        Glide.with(this).load(mMovieConst.getPosterUrl()).into(mPoster);
+//        mName.setText(mMovieConst.getName());
+//        mYear.setText(mMovieConst.getYear());
+//        mDuration.setText(mMovieConst.getDuration());
+//        mSummary.setText(mMovieConst.getSummary());
+//        mRating.setText(String.valueOf(mMovieConst.getScore()) + " / 10");
 
         // if we already querying movie runtime, use restored bundle
         if(savedInstanceState != null){
             mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
         }else{
-            executeFetchMovieDetail(mMovieConst.getId());
+//            executeFetchMovieDetail(mMovieConst.getId());
         }
 
         return view;
@@ -95,7 +95,7 @@ public class DetailFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(MovieConst.MOVIE_RUNTIME, mMovieConst.getDuration());
+//        outState.putString(MovieConst.MOVIE_RUNTIME, mMovieConst.getDuration());
     }
 
     public String generateGetMovieDetailUrl(String movieId){
@@ -172,8 +172,8 @@ public class DetailFragment extends Fragment {
     private void setMovieRating(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            mMovieConst.setDuration(String.valueOf(jsonObject.getInt(MovieConst.MOVIE_RUNTIME)) + " minutes");
-            mDuration.setText(mMovieConst.getDuration());
+//            mMovieConst.setDuration(String.valueOf(jsonObject.getInt(MovieConst.MOVIE_RUNTIME)) + " minutes");
+//            mDuration.setText(mMovieConst.getDuration());
         } catch (JSONException e) {
             e.printStackTrace();
         }

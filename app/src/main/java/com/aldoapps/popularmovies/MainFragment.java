@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,8 +19,8 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.aldoapps.popularmovies.model.DiscoverResponse;
-import com.aldoapps.popularmovies.model.Movie;
+import com.aldoapps.popularmovies.model.Responsez;
+import com.aldoapps.popularmovies.model.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Call;
 import retrofit.Callback;
+import retrofit.GsonConverterFactory;
 import retrofit.MoshiConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -42,7 +42,7 @@ public class MainFragment extends Fragment {
     @Bind(R.id.grid_view) GridView mGridView;
 
     private MoviePosterAdapter mAdapter;
-    private List<Movie> mMovieList = new ArrayList<>();
+    private List<Result> mMovieList = new ArrayList<>();
     private String mSortByValue = "";
 
     public MainFragment() {
@@ -121,11 +121,11 @@ public class MainFragment extends Fragment {
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MovieConst.BASE_URL)
-                    .addConverterFactory(MoshiConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
             TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
-            Call<DiscoverResponse> call = null;
+            Call<Responsez> call = null;
 
             switch (sortBy){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
@@ -143,10 +143,10 @@ public class MainFragment extends Fragment {
 
             if (call != null) {
                 mMovieList.clear();
-                call.enqueue(new Callback<DiscoverResponse>() {
+                call.enqueue(new Callback<Responsez>() {
                     @Override
-                    public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
-                        mMovieList.addAll(response.body().results);
+                    public void onResponse(Response<Responsez> response, Retrofit retrofit) {
+                        mMovieList.addAll(response.body().getResults());
                         mAdapter.notifyDataSetChanged();
                     }
 
@@ -194,7 +194,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(MovieConst.KEY, mMovieList.get(position).id);
+                intent.putExtra(MovieConst.KEY, mMovieList.get(position).getId());
                 startActivity(intent);
             }
         });
