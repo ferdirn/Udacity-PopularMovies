@@ -2,6 +2,7 @@ package com.aldoapps.popularmovies;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.aldoapps.popularmovies.util.MovieConst;
 
@@ -17,12 +18,13 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         if(getIntent() != null){
-            String movieId = getIntent().getStringExtra(MovieConst.KEY);
+            int movieId = getIntent().getIntExtra(MovieConst.KEY, MovieConst.DEFAULT_VALUE);
+            Log.d("asdf", "get movie id on detail activity" + movieId);
             startDetailFragment(movieId);
         }
     }
 
-    private void startDetailFragment(String movieId){
+    private void startDetailFragment(int movieId){
         DetailFragment fragment = (DetailFragment)
                 getSupportFragmentManager().findFragmentByTag(DetailFragment.TAG);
 

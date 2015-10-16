@@ -35,4 +35,5 @@ public class MovieConst{
     public static final String MOVIE_RELEASE_DATE = "release_date";
     public static final String MOVIE_SCORE = "vote_average";
 
+    public static final int DEFAULT_VALUE = 0;
 }

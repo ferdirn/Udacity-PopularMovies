@@ -1,10 +1,13 @@
 package com.aldoapps.popularmovies;
 
 import com.aldoapps.popularmovies.model.DiscoverResponse;
+import com.aldoapps.popularmovies.model.Movie;
+import com.aldoapps.popularmovies.model.MovieDetail;
 import com.aldoapps.popularmovies.util.MovieConst;
 
 import retrofit.Call;
 import retrofit.http.GET;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
@@ -26,4 +29,9 @@ public interface TmdbApi {
                                                  @Query(MovieConst.VOTE_AVERAGE_PARAM) String voteAvg,
                                                  @Query(MovieConst.VOTE_COUNT_PARAM) String voteCount
     );
+
+    @GET("3/movie/{id}")
+    Call<MovieDetail> getMovieDetail(@Path("id") int movieId,
+                               @Query(MovieConst.API_KEY_PARAM) String apiKey
+                               );
 }

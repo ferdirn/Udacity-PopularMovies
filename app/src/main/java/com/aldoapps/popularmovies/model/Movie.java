@@ -50,6 +50,9 @@ public class Movie {
     @SerializedName("vote_count")
     @Expose
     private int voteCount;
+//    @SerializedName("runtime")
+//    @Expose
+//    private int runTime;
 
     /**
      * No args constructor for use in serialization
@@ -91,6 +94,32 @@ public class Movie {
         this.voteAverage = voteAverage;
         this.voteCount = voteCount;
     }
+
+//    public Movie(boolean adult, String backdropPath, List<Integer> genreIds, int id, String originalLanguage, String originalTitle, String overview, String releaseDate, String posterPath, double popularity, String title, boolean video, double voteAverage, int voteCount, int runTime) {
+//        this.adult = adult;
+//        this.backdropPath = backdropPath;
+//        this.genreIds = genreIds;
+//        this.id = id;
+//        this.originalLanguage = originalLanguage;
+//        this.originalTitle = originalTitle;
+//        this.overview = overview;
+//        this.releaseDate = releaseDate;
+//        this.posterPath = posterPath;
+//        this.popularity = popularity;
+//        this.title = title;
+//        this.video = video;
+//        this.voteAverage = voteAverage;
+//        this.voteCount = voteCount;
+//        this.runTime = runTime;
+//    }
+//
+//    public int getRunTime() {
+//        return runTime;
+//    }
+//
+//    public void setRunTime(int runTime) {
+//        this.runTime = runTime;
+//    }
 
     /**
      *

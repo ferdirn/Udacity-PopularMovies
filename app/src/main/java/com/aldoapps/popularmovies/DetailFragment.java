@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aldoapps.popularmovies.model.MovieDetail;
 import com.aldoapps.popularmovies.util.MovieConst;
+import com.aldoapps.popularmovies.util.UrlUtil;
+import com.bumptech.glide.Glide;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +31,11 @@ import java.net.URL;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by user on 03/09/2015.
@@ -42,13 +51,13 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.mark_as_favorite) Button mMarkAsFavorite;
 
     private MovieConst mMovieConst;
-    private String mMovieId = "";
+    private int mMovieId = 0;
 
     public static final String TAG = DetailFragment.class.getSimpleName();
 
-    public static DetailFragment newInstance(String movieId){
+    public static DetailFragment newInstance(int movieId){
         Bundle bundle = new Bundle();
-        bundle.putString(MovieConst.KEY, movieId);
+        bundle.putInt(MovieConst.KEY, movieId);
         DetailFragment fragment = new DetailFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -59,13 +68,42 @@ public class DetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if(getArguments() != null){
-            mMovieId = getArguments().getParcelable(MovieConst.KEY);
+            mMovieId = getArguments().getInt(MovieConst.KEY);
         }
     }
 
-    public void executeFetchMovieDetail(String movieId){
-        FetchMovieDetail task = new FetchMovieDetail();
-        task.execute(movieId);
+    public void enqueueFetchMovieDetail(final int movieId){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(MovieConst.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
+        Call<MovieDetail> call = tmdbApi.getMovieDetail(movieId,
+                getResources().getString(R.string.API_KEY));
+
+        Log.d("asdf", "movie id" + mMovieId);
+
+        call.enqueue(new Callback<MovieDetail>() {
+            @Override
+            public void onResponse(Response<MovieDetail> response, Retrofit retrofit) {
+                MovieDetail movie = response.body();
+                Glide.with(getActivity())
+                        .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
+                        .into(mPoster);
+                mName.setText(movie.getTitle());
+                mYear.setText(movie.getReleaseDate());
+                mDuration.setText(String.valueOf(movie.getRuntime()));
+                mSummary.setText(movie.getOverview());
+                mRating.setText(String.valueOf(movie.getVoteAverage()) + " / 10");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("asdf", "failure happens");
+
+            }
+        });
     }
 
     @Nullable
@@ -74,18 +112,11 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
 
-//        Glide.with(this).load(mMovieConst.getPosterUrl()).into(mPoster);
-//        mName.setText(mMovieConst.getName());
-//        mYear.setText(mMovieConst.getYear());
-//        mDuration.setText(mMovieConst.getDuration());
-//        mSummary.setText(mMovieConst.getSummary());
-//        mRating.setText(String.valueOf(mMovieConst.getScore()) + " / 10");
-
         // if we already querying movie runtime, use restored bundle
         if(savedInstanceState != null){
             mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
         }else{
-//            executeFetchMovieDetail(mMovieConst.getId());
+            enqueueFetchMovieDetail(mMovieId);
         }
 
         return view;
