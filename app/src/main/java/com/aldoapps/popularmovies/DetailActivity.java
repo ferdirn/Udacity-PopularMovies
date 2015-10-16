@@ -19,7 +19,6 @@ public class DetailActivity extends AppCompatActivity {
 
         if(getIntent() != null){
             int movieId = getIntent().getIntExtra(MovieConst.KEY, MovieConst.DEFAULT_VALUE);
-            Log.d("asdf", "get movie id on detail activity" + movieId);
             startDetailFragment(movieId);
         }
     }

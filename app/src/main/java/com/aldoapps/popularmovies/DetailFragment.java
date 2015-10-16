@@ -82,8 +82,6 @@ public class DetailFragment extends Fragment {
         Call<MovieDetail> call = tmdbApi.getMovieDetail(movieId,
                 getResources().getString(R.string.API_KEY));
 
-        Log.d("asdf", "movie id" + mMovieId);
-
         call.enqueue(new Callback<MovieDetail>() {
             @Override
             public void onResponse(Response<MovieDetail> response, Retrofit retrofit) {
@@ -100,8 +98,6 @@ public class DetailFragment extends Fragment {
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("asdf", "failure happens");
-
             }
         });
     }
@@ -114,7 +110,7 @@ public class DetailFragment extends Fragment {
 
         // if we already querying movie runtime, use restored bundle
         if(savedInstanceState != null){
-            mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
+//            mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
         }else{
             enqueueFetchMovieDetail(mMovieId);
         }
@@ -127,86 +123,5 @@ public class DetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
 //        outState.putString(MovieConst.MOVIE_RUNTIME, mMovieConst.getDuration());
-    }
-
-    public String generateGetMovieDetailUrl(String movieId){
-
-        Uri.Builder builder = Uri.parse(MovieConst.MOVIE_DETAIL_BASE_URL + movieId).buildUpon()
-                .appendQueryParameter(MovieConst.API_KEY_PARAM,
-                        getString(R.string.API_KEY));
-
-        Uri uri = builder.build();
-
-        return uri.toString();
-    }
-
-    public class FetchMovieDetail extends AsyncTask<String, Void, String>{
-
-        @Override
-        protected void onPostExecute(String jsonString) {
-            super.onPostExecute(jsonString);
-
-            setMovieRating(jsonString);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            HttpURLConnection httpURLConnection = null;
-            BufferedReader reader = null;
-            StringBuilder sb = new StringBuilder();
-
-            try {
-                URL url = new URL(generateGetMovieDetailUrl(params[0]));
-                httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("GET");
-                httpURLConnection.connect();
-
-                InputStream inputStream = httpURLConnection.getInputStream();
-
-                if(inputStream == null){
-                    return null;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while((line = reader.readLine()) != null){
-                    sb.append(line);
-                }
-
-                if(sb.length() == 0){
-                    return null;
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-                if (httpURLConnection != null) {
-                    httpURLConnection.disconnect();
-                }
-
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return sb.toString();
-        }
-    }
-
-    private void setMovieRating(String jsonString) {
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-//            mMovieConst.setDuration(String.valueOf(jsonObject.getInt(MovieConst.MOVIE_RUNTIME)) + " minutes");
-//            mDuration.setText(mMovieConst.getDuration());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }

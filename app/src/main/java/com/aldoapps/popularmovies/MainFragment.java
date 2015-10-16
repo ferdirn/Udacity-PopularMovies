@@ -191,7 +191,6 @@ public class MainFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                 intent.putExtra(MovieConst.KEY, mMovieList.get(position).getId());
-                Log.d("asdf", "Key " + mMovieList.get(position).getId());
                 startActivity(intent);
             }
         });
