@@ -1,4 +1,4 @@
-package com.aldoapps.popularmovies;
+package com.aldoapps.popularmovies.util;
 
 import android.os.Parcel;
 import android.os.Parcelable;

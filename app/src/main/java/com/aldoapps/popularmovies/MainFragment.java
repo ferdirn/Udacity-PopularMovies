@@ -19,8 +19,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.aldoapps.popularmovies.model.Responsez;
-import com.aldoapps.popularmovies.model.Result;
+import com.aldoapps.popularmovies.model.DiscoverResponse;
+import com.aldoapps.popularmovies.model.Movie;
+import com.aldoapps.popularmovies.util.MovieConst;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,6 @@ import butterknife.ButterKnife;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
-import retrofit.MoshiConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
@@ -42,7 +42,7 @@ public class MainFragment extends Fragment {
     @Bind(R.id.grid_view) GridView mGridView;
 
     private MoviePosterAdapter mAdapter;
-    private List<Result> mMovieList = new ArrayList<>();
+    private List<Movie> mMovieList = new ArrayList<>();
     private String mSortByValue = "";
 
     public MainFragment() {
@@ -114,18 +114,13 @@ public class MainFragment extends Fragment {
 
     private void executeMovieTask(String sortBy) {
         if(isNetworkAvailable()){
-//            Gson gson = new GsonBuilder()
-//                    .setDateFormat("yyyy-MM-dd")
-//                    .registerTypeAdapter(Movie.class, new MovieDeserializer())
-//                    .create();
-
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MovieConst.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
             TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
-            Call<Responsez> call = null;
+            Call<DiscoverResponse> call = null;
 
             switch (sortBy){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
@@ -143,10 +138,10 @@ public class MainFragment extends Fragment {
 
             if (call != null) {
                 mMovieList.clear();
-                call.enqueue(new Callback<Responsez>() {
+                call.enqueue(new Callback<DiscoverResponse>() {
                     @Override
-                    public void onResponse(Response<Responsez> response, Retrofit retrofit) {
-                        mMovieList.addAll(response.body().getResults());
+                    public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
+                        mMovieList.addAll(response.body().getMovies());
                         mAdapter.notifyDataSetChanged();
                     }
 

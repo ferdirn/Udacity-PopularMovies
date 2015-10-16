@@ -3,6 +3,8 @@ package com.aldoapps.popularmovies;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.aldoapps.popularmovies.util.MovieConst;
+
 /**
  * Created by user on 03/09/2015.
  */

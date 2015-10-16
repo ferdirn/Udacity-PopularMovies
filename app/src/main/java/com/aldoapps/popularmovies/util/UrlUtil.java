@@ -1,7 +1,5 @@
 package com.aldoapps.popularmovies.util;
 
-import com.aldoapps.popularmovies.MovieConst;
-
 /**
  * Created by user on 11/10/2015.
  */

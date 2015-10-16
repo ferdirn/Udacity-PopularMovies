@@ -1,45 +1,117 @@
 package com.aldoapps.popularmovies.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class DiscoverResponse implements Parcelable {
-    public int page;
-    public List<Movie> results;
-    public int totalPages;
-    public int totalResults;
+public class DiscoverResponse {
 
-    protected DiscoverResponse(Parcel in) {
-        page = in.readInt();
-        results = in.createTypedArrayList(Movie.CREATOR);
-        totalPages = in.readInt();
-        totalResults = in.readInt();
+    @SerializedName("page")
+    @Expose
+    private int page;
+    @SerializedName("results")
+    @Expose
+    private List<Movie> mMovies = new ArrayList<Movie>();
+    @SerializedName("total_pages")
+    @Expose
+    private int totalPages;
+    @SerializedName("total_results")
+    @Expose
+    private int totalResults;
+
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public DiscoverResponse() {
     }
 
-    public static final Creator<DiscoverResponse> CREATOR = new Creator<DiscoverResponse>() {
-        @Override
-        public DiscoverResponse createFromParcel(Parcel in) {
-            return new DiscoverResponse(in);
-        }
-
-        @Override
-        public DiscoverResponse[] newArray(int size) {
-            return new DiscoverResponse[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
+    /**
+     *
+     * @param movies
+     * @param totalResults
+     * @param page
+     * @param totalPages
+     */
+    public DiscoverResponse(int page, List<Movie> movies, int totalPages, int totalResults) {
+        this.page = page;
+        this.mMovies = movies;
+        this.totalPages = totalPages;
+        this.totalResults = totalResults;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(page);
-        dest.writeTypedList(results);
-        dest.writeInt(totalPages);
-        dest.writeInt(totalResults);
+    /**
+     *
+     * @return
+     * The page
+     */
+    public int getPage() {
+        return page;
     }
+
+    /**
+     *
+     * @param page
+     * The page
+     */
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    /**
+     *
+     * @return
+     * The mMovies
+     */
+    public List<Movie> getMovies() {
+        return mMovies;
+    }
+
+    /**
+     *
+     * @param movies
+     * The mMovies
+     */
+    public void setMovies(List<Movie> movies) {
+        this.mMovies = movies;
+    }
+
+    /**
+     *
+     * @return
+     * The totalPages
+     */
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    /**
+     *
+     * @param totalPages
+     * The total_pages
+     */
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    /**
+     *
+     * @return
+     * The totalResults
+     */
+    public int getTotalResults() {
+        return totalResults;
+    }
+
+    /**
+     *
+     * @param totalResults
+     * The total_results
+     */
+    public void setTotalResults(int totalResults) {
+        this.totalResults = totalResults;
+    }
+
 }

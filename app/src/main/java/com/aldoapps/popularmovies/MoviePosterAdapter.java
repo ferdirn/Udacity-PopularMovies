@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aldoapps.popularmovies.model.Result;
+import com.aldoapps.popularmovies.model.Movie;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
 
@@ -23,10 +23,10 @@ import butterknife.ButterKnife;
 public class MoviePosterAdapter extends BaseAdapter{
 
     private Context mContext;
-    private List<Result> mMovies;
+    private List<Movie> mMovies;
     private LayoutInflater mInflater;
 
-    public MoviePosterAdapter(Context context, List<Result> movies){
+    public MoviePosterAdapter(Context context, List<Movie> movies){
         mContext = context;
         mMovies = movies;
 
@@ -39,7 +39,7 @@ public class MoviePosterAdapter extends BaseAdapter{
     }
 
     @Override
-    public Result getItem(int position) {
+    public Movie getItem(int position) {
         return mMovies.get(position);
     }
 
@@ -51,7 +51,7 @@ public class MoviePosterAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         MovieViewHolder cell;
-        Result movie = getItem(position);
+        Movie movie = getItem(position);
 
         if(convertView == null){
             convertView = mInflater.inflate(R.layout.movie_poster_list_item, parent, false);
