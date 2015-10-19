@@ -9,10 +9,14 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by user on 17/10/2015.
+ * IGNORE THIS CLASS.
+ * This class supposedly used for extract/deserialize the
+ * results only in tmdb API. However, I can't make it works
+ * for now. So, you may ignore it.
  */
 public class TrailerDeserializer implements JsonDeserializer<List<Trailer>> {
 
@@ -22,15 +26,12 @@ public class TrailerDeserializer implements JsonDeserializer<List<Trailer>> {
     public List<Trailer> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         JsonObject rootObject = json.getAsJsonObject();
-//        JsonArray resultArray = rootObject.get("results").getAsJsonArray();
-        System.out.println("attempting deserialization");
 
+        // Method 1. Using GSON Deserialization
         Trailer[] trailers = context.deserialize(rootObject.get("results"), Trailer[].class);
+        Collections.addAll(mTrailers, trailers);
 
-        for (Trailer thisTrailer : trailers){
-            mTrailers.add(thisTrailer);
-        }
-
+//        JsonArray resultArray = rootObject.get("results").getAsJsonArray();
 //        for(JsonElement jsonElement : resultArray){
 //            JsonObject currentJsonObject = jsonElement.getAsJsonObject();
 //            Trailer trailer = new Trailer();

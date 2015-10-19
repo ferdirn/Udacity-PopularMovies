@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,16 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
+import com.aldoapps.popularmovies.model.discover.DiscoverResponse;
 import com.aldoapps.popularmovies.model.discover.Movie;
-import com.aldoapps.popularmovies.model.review.Review;
-import com.aldoapps.popularmovies.model.review.ReviewResponse;
-import com.aldoapps.popularmovies.model.trailer.Trailer;
-import com.aldoapps.popularmovies.model.trailer.TrailerResponse;
 import com.aldoapps.popularmovies.util.MovieConst;
-import com.aldoapps.popularmovies.util.TrailerDeserializer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,10 +114,6 @@ public class MainFragment extends Fragment {
 
     private void executeMovieTask(String sortBy) {
         if(isNetworkAvailable()){
-//            GsonBuilder gsonBuilder = new GsonBuilder();
-//            gsonBuilder.registerTypeAdapter(Trailer.class, new TrailerDeserializer());
-//            Gson gson = gsonBuilder.create();
-//
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MovieConst.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
@@ -131,55 +121,37 @@ public class MainFragment extends Fragment {
 
             TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
 
-            Call<ReviewResponse> call = tmdbApi
-                    .getMovieReviews(49026, getResources().getString(R.string.API_KEY));
+            Call<DiscoverResponse> call = null;
 
-            Log.d("asdf", "attempting request");
+            switch (sortBy){
+                case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
+                    call = tmdbApi.discoverMovies(sortBy,
+                            getResources().getString(R.string.API_KEY),
+                            MovieConst.VOTE_AVERAGE_VALUE,
+                            MovieConst.VOTE_COUNT_VALUE);
+                    break;
+                case MovieConst.SORT_BY_POPULARITY_DESC:
+                    call = tmdbApi.discoverMovies(sortBy,
+                            getResources().getString(R.string.API_KEY)
+                            );
+                    break;
+            }
 
-            call.enqueue(new Callback<ReviewResponse>() {
-                @Override
-                public void onResponse(Response<ReviewResponse> response, Retrofit retrofit) {
-                    Log.d("asdf", "comment " + response.body().getResults().get(0).getContent());
-                }
+            if (call != null) {
+                mMovieList.clear();
+                call.enqueue(new Callback<DiscoverResponse>() {
+                    @Override
+                    public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
+                        mMovieList.addAll(response.body().getMovies());
+                        mAdapter.notifyDataSetChanged();
+                    }
 
-                @Override
-                public void onFailure(Throwable t) {
-                    Log.d("asdf", "failure happens" + t.getMessage());
-
-                }
-            });
-
-//            Call<DiscoverResponse> call = null;
-//
-//            switch (sortBy){
-//                case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
-//                    call = tmdbApi.discoverMovies(sortBy,
-//                            getResources().getString(R.string.API_KEY),
-//                            MovieConst.VOTE_AVERAGE_VALUE,
-//                            MovieConst.VOTE_COUNT_VALUE);
-//                    break;
-//                case MovieConst.SORT_BY_POPULARITY_DESC:
-//                    call = tmdbApi.discoverMovies(sortBy,
-//                            getResources().getString(R.string.API_KEY)
-//                            );
-//                    break;
-//            }
-//
-//            if (call != null) {
-//                mMovieList.clear();
-//                call.enqueue(new Callback<DiscoverResponse>() {
-//                    @Override
-//                    public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
-//                        mMovieList.addAll(response.body().getMovies());
-//                        mAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Throwable t) {
-//                        Toast.makeText(getActivity(), "Fail to fetch data ", Toast.LENGTH_SHORT);
-//                    }
-//                });
-//            }
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Toast.makeText(getActivity(), "Fail to fetch data ", Toast.LENGTH_SHORT);
+                    }
+                });
+            }
         }else{
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.no_internet_message)

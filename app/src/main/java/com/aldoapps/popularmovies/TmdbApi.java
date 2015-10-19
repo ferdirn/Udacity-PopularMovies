@@ -37,11 +37,13 @@ public interface TmdbApi {
                                @Query(MovieConst.API_KEY_PARAM) String apiKey
                                );
 
+    // movie review id sample: 49026 - The Dark Knight
     @GET("3/movie/{id}/reviews")
     Call<ReviewResponse> getMovieReviews(@Path("id") int movieId,
                                 @Query(MovieConst.API_KEY_PARAM) String apiKey
                                 );
 
+    // movie trailer id sample: 550 - Fight Club
     @GET("3/movie/{id}/videos")
     Call<TrailerResponse> getMovieTrailers(@Path("id") int movieId,
                                  @Query(MovieConst.API_KEY_PARAM) String apiKey

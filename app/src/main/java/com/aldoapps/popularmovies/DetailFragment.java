@@ -6,14 +6,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
+import com.aldoapps.popularmovies.model.trailer.TrailerResponse;
 import com.aldoapps.popularmovies.util.MovieConst;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,9 +40,11 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.movie_duration) TextView mDuration;
     @Bind(R.id.movie_summary) TextView mSummary;
     @Bind(R.id.mark_as_favorite) Button mMarkAsFavorite;
+    @Bind(R.id.trailer_list) ListView mListView;
 
     private MovieConst mMovieConst;
     private int mMovieId = 0;
+    private List
 
     public static final String TAG = DetailFragment.class.getSimpleName();
 
@@ -65,10 +72,10 @@ public class DetailFragment extends Fragment {
                 .build();
 
         TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
-        Call<MovieDetail> call = tmdbApi.getMovieDetail(movieId,
+        Call<MovieDetail> callMovieDetail = tmdbApi.getMovieDetail(movieId,
                 getResources().getString(R.string.API_KEY));
 
-        call.enqueue(new Callback<MovieDetail>() {
+        callMovieDetail.enqueue(new Callback<MovieDetail>() {
             @Override
             public void onResponse(Response<MovieDetail> response, Retrofit retrofit) {
                 MovieDetail movie = response.body();
@@ -84,6 +91,23 @@ public class DetailFragment extends Fragment {
 
             @Override
             public void onFailure(Throwable t) {
+            }
+        });
+
+        Call<TrailerResponse> callTrailerDetail = tmdbApi.getMovieTrailers(movieId,
+                getString(R.string.API_KEY));
+
+        callTrailerDetail.enqueue(new Callback<TrailerResponse>() {
+            @Override
+            public void onResponse(Response<TrailerResponse> response, Retrofit retrofit) {
+                mListView.setAdapter(new ArrayAdapter<>());
+
+//                response.
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
             }
         });
     }
