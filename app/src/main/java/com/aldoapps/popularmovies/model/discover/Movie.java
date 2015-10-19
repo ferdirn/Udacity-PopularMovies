@@ -1,4 +1,4 @@
-package com.aldoapps.popularmovies.model;
+package com.aldoapps.popularmovies.model.discover;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

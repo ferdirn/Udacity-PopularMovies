@@ -1,4 +1,4 @@
-package com.aldoapps.popularmovies.model;
+package com.aldoapps.popularmovies.model.review;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -6,14 +6,17 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscoverResponse {
+public class ReviewResponse {
 
+    @SerializedName("id")
+    @Expose
+    private int id;
     @SerializedName("page")
     @Expose
     private int page;
     @SerializedName("results")
     @Expose
-    private List<Movie> mMovies = new ArrayList<Movie>();
+    private List<Review> results = new ArrayList<Review>();
     @SerializedName("total_pages")
     @Expose
     private int totalPages;
@@ -25,21 +28,41 @@ public class DiscoverResponse {
      * No args constructor for use in serialization
      *
      */
-    public DiscoverResponse() {
+    public ReviewResponse() {
     }
 
     /**
      *
-     * @param movies
+     * @param id
+     * @param results
      * @param totalResults
      * @param page
      * @param totalPages
      */
-    public DiscoverResponse(int page, List<Movie> movies, int totalPages, int totalResults) {
+    public ReviewResponse(int id, int page, List<Review> results, int totalPages, int totalResults) {
+        this.id = id;
         this.page = page;
-        this.mMovies = movies;
+        this.results = results;
         this.totalPages = totalPages;
         this.totalResults = totalResults;
+    }
+
+    /**
+     *
+     * @return
+     * The id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     *
+     * @param id
+     * The id
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -63,19 +86,19 @@ public class DiscoverResponse {
     /**
      *
      * @return
-     * The mMovies
+     * The results
      */
-    public List<Movie> getMovies() {
-        return mMovies;
+    public List<Review> getResults() {
+        return results;
     }
 
     /**
      *
-     * @param movies
-     * The mMovies
+     * @param results
+     * The results
      */
-    public void setMovies(List<Movie> movies) {
-        this.mMovies = movies;
+    public void setResults(List<Review> results) {
+        this.results = results;
     }
 
     /**

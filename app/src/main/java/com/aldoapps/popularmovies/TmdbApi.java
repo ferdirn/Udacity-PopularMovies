@@ -1,8 +1,10 @@
 package com.aldoapps.popularmovies;
 
-import com.aldoapps.popularmovies.model.DiscoverResponse;
-import com.aldoapps.popularmovies.model.Movie;
-import com.aldoapps.popularmovies.model.MovieDetail;
+import com.aldoapps.popularmovies.model.discover.DiscoverResponse;
+import com.aldoapps.popularmovies.model.discover.Movie;
+import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
+import com.aldoapps.popularmovies.model.review.ReviewResponse;
+import com.aldoapps.popularmovies.model.trailer.TrailerResponse;
 import com.aldoapps.popularmovies.util.MovieConst;
 
 import retrofit.Call;
@@ -34,4 +36,14 @@ public interface TmdbApi {
     Call<MovieDetail> getMovieDetail(@Path("id") int movieId,
                                @Query(MovieConst.API_KEY_PARAM) String apiKey
                                );
+
+    @GET("3/movie/{id}/reviews")
+    Call<ReviewResponse> getMovieReviews(@Path("id") int movieId,
+                                @Query(MovieConst.API_KEY_PARAM) String apiKey
+                                );
+
+    @GET("3/movie/{id}/videos")
+    Call<TrailerResponse> getMovieTrailers(@Path("id") int movieId,
+                                 @Query(MovieConst.API_KEY_PARAM) String apiKey
+                                 );
 }

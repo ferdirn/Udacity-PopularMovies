@@ -25,15 +25,5 @@ public class MovieConst{
     public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
     public static final String POSTER_SIZE_PARAM = "/w185";
 
-    // JSON stuff
-    public static final String MOVIE_ID = "id";
-    public static final String MOVIE_ARRAY = "results";
-    public static final String MOVIE_POSTER = "poster_path";
-    public static final String MOVIE_ORIGINAL_TITLE = "original_title";
-    public static final String MOVIE_RUNTIME = "runtime";
-    public static final String MOVIE_OVERVIEW = "overview";
-    public static final String MOVIE_RELEASE_DATE = "release_date";
-    public static final String MOVIE_SCORE = "vote_average";
-
     public static final int DEFAULT_VALUE = 0;
 }

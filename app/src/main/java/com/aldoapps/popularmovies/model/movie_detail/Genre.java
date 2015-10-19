@@ -1,13 +1,13 @@
-package com.aldoapps.popularmovies.model;
+package com.aldoapps.popularmovies.model.movie_detail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class SpokenLanguage {
+public class Genre {
 
-    @SerializedName("iso_639_1")
+    @SerializedName("id")
     @Expose
-    private String iso6391;
+    private int id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -16,35 +16,35 @@ public class SpokenLanguage {
      * No args constructor for use in serialization
      *
      */
-    public SpokenLanguage() {
+    public Genre() {
     }
 
     /**
      *
-     * @param iso6391
+     * @param id
      * @param name
      */
-    public SpokenLanguage(String iso6391, String name) {
-        this.iso6391 = iso6391;
+    public Genre(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 
     /**
      *
      * @return
-     * The iso6391
+     * The id
      */
-    public String getIso6391() {
-        return iso6391;
+    public int getId() {
+        return id;
     }
 
     /**
      *
-     * @param iso6391
-     * The iso_639_1
+     * @param id
+     * The id
      */
-    public void setIso6391(String iso6391) {
-        this.iso6391 = iso6391;
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -66,3 +66,4 @@ public class SpokenLanguage {
     }
 
 }
+
