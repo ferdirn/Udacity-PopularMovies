@@ -138,10 +138,10 @@ public class MainFragment extends Fragment {
             }
 
             if (call != null) {
-                mMovieList.clear();
                 call.enqueue(new Callback<DiscoverResponse>() {
                     @Override
                     public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
+                        mMovieList.clear();
                         mMovieList.addAll(response.body().getMovies());
                         mAdapter.notifyDataSetChanged();
                     }

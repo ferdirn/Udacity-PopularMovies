@@ -3,21 +3,27 @@ package com.aldoapps.popularmovies;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.aldoapps.popularmovies.adapter.TrailerAdapter;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
+import com.aldoapps.popularmovies.model.trailer.Trailer;
 import com.aldoapps.popularmovies.model.trailer.TrailerResponse;
 import com.aldoapps.popularmovies.util.MovieConst;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -44,7 +50,8 @@ public class DetailFragment extends Fragment {
 
     private MovieConst mMovieConst;
     private int mMovieId = 0;
-    private List
+    private TrailerAdapter mAdapter;
+    private List<Trailer> mTrailers = new ArrayList<>();
 
     public static final String TAG = DetailFragment.class.getSimpleName();
 
@@ -63,6 +70,8 @@ public class DetailFragment extends Fragment {
         if(getArguments() != null){
             mMovieId = getArguments().getInt(MovieConst.KEY);
         }
+
+        mAdapter = new TrailerAdapter(getActivity(), mTrailers);
     }
 
     public void enqueueFetchMovieDetail(final int movieId){
@@ -100,9 +109,11 @@ public class DetailFragment extends Fragment {
         callTrailerDetail.enqueue(new Callback<TrailerResponse>() {
             @Override
             public void onResponse(Response<TrailerResponse> response, Retrofit retrofit) {
-                mListView.setAdapter(new ArrayAdapter<>());
-
-//                response.
+                mTrailers.clear();
+                for(Trailer trailer : response.body().getResults()){
+                    mTrailers.add(trailer);
+                    mAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -117,6 +128,15 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
+
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("asdf", "clicked");
+                startActivity(UrlUtil.watchYoutubeVideo(mAdapter.getItem(position).getKey()));
+            }
+        });
 
         // if we already querying movie runtime, use restored bundle
         if(savedInstanceState != null){
