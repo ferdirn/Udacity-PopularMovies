@@ -16,4 +16,5 @@
     <string name="movie_detail">Movie Detail</string>
     <string name="no_internet_message">Do you want to open settings?</string>
     <string name="no_internet_title">Something wrong with your Internet</string>
+    <string name="comment">Comment</string>
 </resources>

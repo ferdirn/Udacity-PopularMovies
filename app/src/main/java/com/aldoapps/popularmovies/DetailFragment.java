@@ -8,22 +8,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.aldoapps.popularmovies.adapter.CommentAdapter;
 import com.aldoapps.popularmovies.adapter.TrailerAdapter;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
+import com.aldoapps.popularmovies.model.review.Review;
+import com.aldoapps.popularmovies.model.review.ReviewResponse;
 import com.aldoapps.popularmovies.model.trailer.Trailer;
 import com.aldoapps.popularmovies.model.trailer.TrailerResponse;
+import com.aldoapps.popularmovies.tjerkw.slideexpandable.library.SlideExpandableListAdapter;
 import com.aldoapps.popularmovies.util.MovieConst;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
 
+import org.w3c.dom.Comment;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -46,14 +50,17 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.movie_duration) TextView mDuration;
     @Bind(R.id.movie_summary) TextView mSummary;
     @Bind(R.id.mark_as_favorite) Button mMarkAsFavorite;
-    @Bind(R.id.trailer_list) ListView mListView;
+    @Bind(R.id.trailer_list) ListView mTrailerListView;
+    @Bind(R.id.comment_list) ListView mCommentListView;
 
     private MovieConst mMovieConst;
     private int mMovieId = 0;
-    private TrailerAdapter mAdapter;
+    private TrailerAdapter mTrailerAdapter;
+    private CommentAdapter mCommentAdapter;
     private List<Trailer> mTrailers = new ArrayList<>();
 
     public static final String TAG = DetailFragment.class.getSimpleName();
+    private List<Review> mComments = new ArrayList<>();
 
     public static DetailFragment newInstance(int movieId){
         Bundle bundle = new Bundle();
@@ -71,7 +78,8 @@ public class DetailFragment extends Fragment {
             mMovieId = getArguments().getInt(MovieConst.KEY);
         }
 
-        mAdapter = new TrailerAdapter(getActivity(), mTrailers);
+        mTrailerAdapter = new TrailerAdapter(getActivity(), mTrailers);
+        mCommentAdapter = new CommentAdapter(getActivity(), mComments);
     }
 
     public void enqueueFetchMovieDetail(final int movieId){
@@ -112,8 +120,27 @@ public class DetailFragment extends Fragment {
                 mTrailers.clear();
                 for(Trailer trailer : response.body().getResults()){
                     mTrailers.add(trailer);
-                    mAdapter.notifyDataSetChanged();
+                    mTrailerAdapter.notifyDataSetChanged();
                 }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+
+        Call<ReviewResponse> callComments = tmdbApi.getMovieReviews(movieId,
+                getString(R.string.API_KEY));
+
+        callComments.enqueue(new Callback<ReviewResponse>() {
+            @Override
+            public void onResponse(Response<ReviewResponse> response, Retrofit retrofit) {
+                mComments.clear();
+                for(Review review : response.body().getResults()){
+                    mComments.add(review);
+                }
+                mCommentAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -129,12 +156,21 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
 
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mComments.add(new Review());
+        mComments.add(new Review());
+        mCommentAdapter.notifyDataSetChanged();
+        mCommentListView.setAdapter(mCommentAdapter);
+        mCommentListView.setAdapter(new SlideExpandableListAdapter(
+                mCommentAdapter,
+                R.id.author_text,
+                R.id.expandable
+        ));
+
+        mTrailerListView.setAdapter(mTrailerAdapter);
+        mTrailerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("asdf", "clicked");
-                startActivity(UrlUtil.watchYoutubeVideo(mAdapter.getItem(position).getKey()));
+                startActivity(UrlUtil.watchYoutubeVideo(mTrailerAdapter.getItem(position).getKey()));
             }
         });
 
