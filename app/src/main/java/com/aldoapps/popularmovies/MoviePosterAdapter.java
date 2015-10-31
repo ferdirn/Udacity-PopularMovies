@@ -11,8 +11,12 @@ import android.widget.TextView;
 import com.aldoapps.popularmovies.model.discover.Movie;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.FutureTarget;
 
+import java.io.File;
+import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -61,9 +65,21 @@ public class MoviePosterAdapter extends BaseAdapter{
             cell = (MovieViewHolder) convertView.getTag();
         }
 
-        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath())).into(
+        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
+                .into(
                 cell.moviePoster
         );
+
+//        FutureTarget<File> future = Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
+//                .downloadOnly(100,100);
+//
+//        try {
+//            URI cachedFile = future.get().toURI();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
 
         cell.movieName.setText(movie.getTitle());
 

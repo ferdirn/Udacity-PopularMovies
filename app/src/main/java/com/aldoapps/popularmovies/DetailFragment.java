@@ -25,8 +25,6 @@ import com.aldoapps.popularmovies.util.MovieConst;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
 
-import org.w3c.dom.Comment;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,7 +137,7 @@ public class DetailFragment extends Fragment {
                 mComments.clear();
                 for(Review review : response.body().getResults()){
                     mComments.add(review);
-                }
+               }
                 mCommentAdapter.notifyDataSetChanged();
             }
 
@@ -156,8 +154,6 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
 
-        mComments.add(new Review());
-        mComments.add(new Review());
         mCommentAdapter.notifyDataSetChanged();
         mCommentListView.setAdapter(mCommentAdapter);
         mCommentListView.setAdapter(new SlideExpandableListAdapter(

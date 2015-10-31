@@ -28,6 +28,11 @@
                   android:configChanges="orientation|keyboardHidden"
                   android:parentActivityName=".MainActivity"
             />
+
+        <activity android:name=".FavoriteMovieActivity"
+                android:label="@string/favorite_movie"
+                android:parentActivityName=".MainActivity"
+            />
     </application>
 
 </manifest>

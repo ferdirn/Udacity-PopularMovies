@@ -48,6 +48,8 @@ public class MainFragment extends Fragment {
     public MainFragment() {
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,13 +72,20 @@ public class MainFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            showSortByDialogue();
-            return true;
+        switch (id){
+            case R.id.action_settings:
+                showSortByDialogue();
+                break;
+            case R.id.action_favorite:
+                navigateToOfflineMovieList();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void navigateToOfflineMovieList() {
+        Intent intent = new Intent(getActivity(), FavoriteMovieActivity.class);
     }
 
     private void showSortByDialogue() {

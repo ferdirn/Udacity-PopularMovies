@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_small"
+        >
 
         <TextView
             android:id="@+id/author_text"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:text="Hello World"/>
-
-        <!-- this is the button that will trigger sliding of the expandable view -->
-        <Button
-            android:id="@+id/expandable_toggle_button"
-            android:text="More"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/author_text"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@id/author_text"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:text="Hello World"
+            android:gravity="center|left"
+            android:textStyle="bold"
+            />
 
     </RelativeLayout>
 
     <!-- this is the expandable view that is initially hidden and will slide out when the more button is pressed -->
     <LinearLayout
+        android:id="@+id/expandable"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:id="@+id/expandable"
+        android:padding="@dimen/padding_small"
     >
 
         <!-- put whatever you want in the expandable view -->
         <TextView
             android:id="@+id/review_text"
             android:layout_width="match_parent"
-            android:layout_height="100dp"/>
-
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            />
     </LinearLayout>
 </LinearLayout>
