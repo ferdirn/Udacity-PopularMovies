@@ -65,21 +65,9 @@ public class MoviePosterAdapter extends BaseAdapter{
             cell = (MovieViewHolder) convertView.getTag();
         }
 
-        Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
-                .into(
-                cell.moviePoster
-        );
-
-//        FutureTarget<File> future = Glide.with(mContext).load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
-//                .downloadOnly(100,100);
-//
-//        try {
-//            URI cachedFile = future.get().toURI();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        }
+        Glide.with(mContext)
+                .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
+                .into(cell.moviePoster);
 
         cell.movieName.setText(movie.getTitle());
 

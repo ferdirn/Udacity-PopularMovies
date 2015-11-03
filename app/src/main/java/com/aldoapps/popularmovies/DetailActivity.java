@@ -25,14 +25,28 @@ public class DetailActivity extends AppCompatActivity {
 
     private void startDetailFragment(int movieId){
         DetailFragment fragment = (DetailFragment)
-                getSupportFragmentManager().findFragmentByTag(DetailFragment.TAG);
+                getSupportFragmentManager().findFragmentById(R.id.container);
 
         if(fragment == null){
             fragment = DetailFragment.newInstance(movieId);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, fragment, DetailFragment.TAG)
+                    .commit();
         }
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment, DetailFragment.TAG)
-                .commit();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Log.d("asdf", "Detail Activity on Pause called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Log.d("asdf", "Detail Activity on Destroy called");
     }
 }

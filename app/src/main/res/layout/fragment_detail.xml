@@ -40,6 +40,14 @@
                 android:scaleType="centerCrop"
                 android:paddingLeft="@dimen/padding_medium"
                 />
+            <ImageView
+                android:id="@+id/movie_poster_two"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:paddingLeft="@dimen/padding_medium"
+                />
 
             <LinearLayout
                 android:layout_width="0dp"
