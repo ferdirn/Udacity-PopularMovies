@@ -66,9 +66,12 @@ public class DetailFragment extends Fragment {
     private TrailerAdapter mTrailerAdapter;
     private CommentAdapter mCommentAdapter;
     private List<Trailer> mTrailers = new ArrayList<>();
+    private Call<MovieDetail> mCallMovieDetail;
 
     public static final String TAG = DetailFragment.class.getSimpleName();
     private List<Review> mComments = new ArrayList<>();
+    private Call<TrailerResponse> mCallTrailerDetail;
+    private Call<ReviewResponse> mCallComments;
 
     public static DetailFragment newInstance(int movieId){
         Bundle bundle = new Bundle();
@@ -99,14 +102,14 @@ public class DetailFragment extends Fragment {
                 .build();
 
         TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
-        Call<MovieDetail> callMovieDetail = tmdbApi.getMovieDetail(movieId,
+        mCallMovieDetail = tmdbApi.getMovieDetail(movieId,
                 getResources().getString(R.string.API_KEY));
-        callMovieDetail.enqueue(new Callback<MovieDetail>() {
+        mCallMovieDetail.enqueue(new Callback<MovieDetail>() {
             @Override
             public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
                 MovieDetail movie = response.body();
                 mMovie = movie;
-                Glide.with(getActivity().getApplicationContext())
+                Glide.with(getActivity())
                         .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
                         .into(mPoster);
 
@@ -123,14 +126,14 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        Call<TrailerResponse> callTrailerDetail = tmdbApi.getMovieTrailers(movieId,
+        mCallTrailerDetail = tmdbApi.getMovieTrailers(movieId,
                 getString(R.string.API_KEY));
 
-        callTrailerDetail.enqueue(new Callback<TrailerResponse>() {
+        mCallTrailerDetail.enqueue(new Callback<TrailerResponse>() {
             @Override
             public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
                 mTrailers.clear();
-                for(Trailer trailer : response.body().getResults()){
+                for (Trailer trailer : response.body().getResults()) {
                     mTrailers.add(trailer);
                     mTrailerAdapter.notifyDataSetChanged();
                 }
@@ -142,10 +145,10 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        Call<ReviewResponse> callComments = tmdbApi.getMovieReviews(movieId,
+        mCallComments = tmdbApi.getMovieReviews(movieId,
                 getString(R.string.API_KEY));
 
-        callComments.enqueue(new Callback<ReviewResponse>() {
+        mCallComments.enqueue(new Callback<ReviewResponse>() {
             @Override
             public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
                 mComments.clear();
@@ -167,6 +170,14 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
+
+        if((Paper.book().read(String.valueOf(mMovieId))) != null){
+            Glide.with(getActivity())
+                    .load(((PaperMovie) Paper.book()
+                            .read(String.valueOf(mMovieId)))
+                            .getPosterFilePath())
+                    .into(mMoviePosterTwo);
+        }
 
         mCommentAdapter.notifyDataSetChanged();
         mCommentListView.setAdapter(mCommentAdapter);
@@ -273,5 +284,26 @@ public class DetailFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        // We need to cancel all queue, because sometimes onResponse is called
+        // even after the activity is destroyed. Thus creating NPE
+        // Good thing Retrofit 2 has .cancel() features
+        if(mCallMovieDetail != null){
+            mCallMovieDetail.cancel();
+        }
+
+        if(mCallTrailerDetail != null){
+            mCallTrailerDetail.cancel();
+        }
+
+        if(mCallComments != null){
+            mCallComments.cancel();
+        }
+
+
+        super.onPause();
     }
 }
