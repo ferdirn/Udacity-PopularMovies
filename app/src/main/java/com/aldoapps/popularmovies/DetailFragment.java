@@ -37,11 +37,11 @@ import java.util.concurrent.ExecutionException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.paperdb.Paper;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by user on 03/09/2015.
@@ -101,10 +101,9 @@ public class DetailFragment extends Fragment {
         TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
         Call<MovieDetail> callMovieDetail = tmdbApi.getMovieDetail(movieId,
                 getResources().getString(R.string.API_KEY));
-
         callMovieDetail.enqueue(new Callback<MovieDetail>() {
             @Override
-            public void onResponse(Response<MovieDetail> response, Retrofit retrofit) {
+            public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
                 MovieDetail movie = response.body();
                 mMovie = movie;
                 Glide.with(getActivity().getApplicationContext())
@@ -119,7 +118,8 @@ public class DetailFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<MovieDetail> call, Throwable t) {
+
             }
         });
 
@@ -128,7 +128,7 @@ public class DetailFragment extends Fragment {
 
         callTrailerDetail.enqueue(new Callback<TrailerResponse>() {
             @Override
-            public void onResponse(Response<TrailerResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
                 mTrailers.clear();
                 for(Trailer trailer : response.body().getResults()){
                     mTrailers.add(trailer);
@@ -137,7 +137,7 @@ public class DetailFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<TrailerResponse> call, Throwable t) {
 
             }
         });
@@ -147,16 +147,16 @@ public class DetailFragment extends Fragment {
 
         callComments.enqueue(new Callback<ReviewResponse>() {
             @Override
-            public void onResponse(Response<ReviewResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
                 mComments.clear();
                 for(Review review : response.body().getResults()){
                     mComments.add(review);
-               }
+                }
                 mCommentAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<ReviewResponse> call, Throwable t) {
 
             }
         });
@@ -273,15 +273,5 @@ public class DetailFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 }

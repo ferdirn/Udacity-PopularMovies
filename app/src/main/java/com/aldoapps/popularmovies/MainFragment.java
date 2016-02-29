@@ -28,11 +28,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -149,15 +149,16 @@ public class MainFragment extends Fragment {
             if (call != null) {
                 call.enqueue(new Callback<DiscoverResponse>() {
                     @Override
-                    public void onResponse(Response<DiscoverResponse> response, Retrofit retrofit) {
+                    public void onResponse(Call<DiscoverResponse> call, Response<DiscoverResponse> response) {
                         mMovieList.clear();
                         mMovieList.addAll(response.body().getMovies());
                         mAdapter.notifyDataSetChanged();
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
-                        Toast.makeText(getActivity(), "Fail to fetch data ", Toast.LENGTH_SHORT);
+                    public void onFailure(Call<DiscoverResponse> call, Throwable t) {
+                        Toast.makeText(getActivity(),
+                                "Failed to fetch data ", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

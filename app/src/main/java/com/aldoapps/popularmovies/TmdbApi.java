@@ -1,16 +1,15 @@
 package com.aldoapps.popularmovies;
 
 import com.aldoapps.popularmovies.model.discover.DiscoverResponse;
-import com.aldoapps.popularmovies.model.discover.Movie;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 import com.aldoapps.popularmovies.model.review.ReviewResponse;
 import com.aldoapps.popularmovies.model.trailer.TrailerResponse;
 import com.aldoapps.popularmovies.util.MovieConst;
 
-import retrofit.Call;
-import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Retrofit Interface

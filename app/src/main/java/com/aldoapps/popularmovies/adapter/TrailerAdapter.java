@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aldoapps.popularmovies.R;
 import com.aldoapps.popularmovies.model.trailer.Trailer;
+import com.aldoapps.popularmovies.util.UrlUtil;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -45,8 +48,15 @@ public class TrailerAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView = mInflater.inflate(R.layout.trailer_item, parent, false);
-        TextView textView = (TextView) convertView.findViewById(R.id.trailer_name);
-        textView.setText(mContext.getString(R.string.trailer) + " " + (position + 1));
+
+        String thumbnailUrl = UrlUtil.getVideoThumbnail(mTrailer.get(0).getKey());
+
+        ImageView trailerThumbnail = (ImageView) convertView.findViewById(R.id.trailer_image);
+        Glide.with(mContext).load(thumbnailUrl).into(trailerThumbnail);
+
+        TextView trailerNumber = (TextView) convertView.findViewById(R.id.trailer_name);
+        trailerNumber.setText(mContext.getString(R.string.trailer) + " " + (position + 1));
+
         return convertView;
     }
 

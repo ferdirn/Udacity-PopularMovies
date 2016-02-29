@@ -1,14 +1,7 @@
 package com.aldoapps.popularmovies;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends SingleFragmentActivity {
 

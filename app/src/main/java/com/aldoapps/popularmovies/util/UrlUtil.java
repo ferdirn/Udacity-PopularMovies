@@ -3,11 +3,16 @@ package com.aldoapps.popularmovies.util;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
+
+import java.util.Random;
 
 /**
  * Created by user on 11/10/2015.
  */
 public class UrlUtil {
+    private static final long DEFAULT_SEED = 16;
+
     /**
      * Generate image url by combining various url
      * @param posterPath
@@ -35,5 +40,18 @@ public class UrlUtil {
         }finally {
             return intent;
         }
+    }
+
+    /**
+     * Generate url for YouTube video thumbnail
+     * @param videoId
+     * @return
+     */
+    public static String getVideoThumbnail(String videoId){
+        Random random = new Random(DEFAULT_SEED);
+        // get random thumbnail number 1 - 3
+        // for more info http://stackoverflow.com/a/8842839/1760984
+        int thumbnailNumber = random.nextInt(2) + 1;
+        return "http://img.youtube.com/vi/"+ videoId +"/"+ thumbnailNumber + ".jpg";
     }
 }

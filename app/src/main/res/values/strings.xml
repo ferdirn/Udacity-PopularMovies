@@ -18,4 +18,5 @@
     <string name="no_internet_title">Something wrong with your Internet</string>
     <string name="comment">Comment</string>
     <string name="favorite_movie">Favorite Movie</string>
+    <string name="API_KEY">bc038bb869a181d827bb98836dadeb23</string>
 </resources>
