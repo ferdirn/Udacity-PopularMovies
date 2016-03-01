@@ -288,9 +288,11 @@ public class DetailFragment extends Fragment {
 
     @Override
     public void onPause() {
-        // We need to cancel all queue, because sometimes onResponse is called
-        // even after the activity is destroyed. Thus creating NPE
-        // Good thing Retrofit 2 has .cancel() features
+        /**
+         * We need to cancel all queue, because sometimes onResponse is called
+         * even after the activity is destroyed. Thus creating NPE
+         * Good thing Retrofit 2 has .cancel() features
+         */
         if(mCallMovieDetail != null){
             mCallMovieDetail.cancel();
         }
