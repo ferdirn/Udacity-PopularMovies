@@ -16,14 +16,14 @@ import retrofit2.http.Query;
  */
 public interface TmdbApi {
 
-    // sort by highest rated, require another two parameter
-    // average votes and vote count (to make sure its not some
-    // random movie with only a few people rate it 10) minimum of 1000 people
     @GET("3/discover/movie")
     Call<DiscoverResponse> discoverMovies(@Query(MovieConst.SORT_BY_PARAM) String sortBy,
                                             @Query(MovieConst.API_KEY_PARAM) String apiKey
     );
 
+    // sort by highest rated, require another two parameter
+    // average votes and vote count (to make sure its not some
+    // random movie with only a few people rate it 10) minimum of 1000 people
     @GET("3/discover/movie")
     Call<DiscoverResponse> discoverMovies(@Query(MovieConst.SORT_BY_PARAM) String sortBy,
                                                  @Query(MovieConst.API_KEY_PARAM) String apiKey,

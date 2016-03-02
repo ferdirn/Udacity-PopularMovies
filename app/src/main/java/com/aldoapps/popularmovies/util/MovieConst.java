@@ -24,6 +24,7 @@ public class MovieConst{
 
     public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
     public static final String POSTER_SIZE_PARAM = "/w185";
+    public static final String BACKDROP_SIZE_PARAM = "/w500";
 
     public static final int DEFAULT_VALUE = 0;
 }

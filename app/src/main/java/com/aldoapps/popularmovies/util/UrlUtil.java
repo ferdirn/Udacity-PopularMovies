@@ -25,6 +25,15 @@ public class UrlUtil {
     }
 
     /**
+     * Generate image url for backdrop image view
+     * @param backdropPath
+     * @return
+     */
+    public static String generateBackdropUrl(String backdropPath){
+        return MovieConst.IMAGE_BASE_URL + MovieConst.BACKDROP_SIZE_PARAM + backdropPath;
+    }
+
+    /**
      * Creating intent for opening video link from tmdbapi
      * @param id
      * @return Intent. If user installed youtube it will open youtube app
