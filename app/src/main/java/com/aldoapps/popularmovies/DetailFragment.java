@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.aldoapps.popularmovies.adapter.CommentAdapter;
 import com.aldoapps.popularmovies.adapter.TrailerAdapter;
+import com.aldoapps.popularmovies.data.MovieContract;
 import com.aldoapps.popularmovies.data.PaperMovie;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 import com.aldoapps.popularmovies.model.review.Review;
@@ -114,7 +115,7 @@ public class DetailFragment extends Fragment {
                         .into(mPoster);
 
                 mName.setText(movie.getTitle());
-                mYear.setText(movie.getReleaseDate());
+                mYear.setText(MovieContract.parseMovieYear(movie.getReleaseDate()));
                 mDuration.setText(String.valueOf(movie.getRuntime()));
                 mSummary.setText(movie.getOverview());
                 mRating.setText(String.valueOf(movie.getVoteAverage()) + " / 10");
