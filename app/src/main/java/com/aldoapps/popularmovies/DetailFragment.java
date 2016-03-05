@@ -186,13 +186,13 @@ public class DetailFragment extends Fragment {
             public void onClick(View v) {
                 MovieProvider provider = new MovieProvider(getActivity());
                 MovieDetail asdf = provider.getMovie(mMovie.getId());
-                if(asdf != null && asdf.getTitle() != null){
-                    Log.d("asdf", "judul " + asdf.getTitle());
-                    Log.d("asdf", "poster path + backdrop " + asdf.getBackdropPath());
-                    Log.d("asdf", "over view " + asdf.getOverview());
-                }else{
-                    Log.d("asdf", "no such movie (null)");
-                }
+//                if(asdf != null && asdf.getTitle() != null){
+//                    Log.d("asdf", "judul " + asdf.getTitle());
+//                    Log.d("asdf", "poster path + backdrop " + asdf.getBackdropPath());
+//                    Log.d("asdf", "over view " + asdf.getOverview());
+//                }else{
+//                    Log.d("asdf", "no such movie (null)");
+//                }
                 provider.close();
             }
         });

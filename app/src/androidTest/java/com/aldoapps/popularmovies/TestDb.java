@@ -1,6 +1,7 @@
 package com.aldoapps.popularmovies;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
@@ -52,8 +53,15 @@ public class TestDb extends AndroidTestCase {
         MovieDbHelper db = new MovieDbHelper(this.mContext);
 
         long hasil = db.getWritableDatabase().insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
-        assertEquals(true, (hasil == -1));
+        assertEquals(true, (hasil != -1));
         db.close();
+    }
+
+    public void testGetAllMovies() throws Throwable {
+        MovieDbHelper helper = new MovieDbHelper(this.mContext);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        Cursor cursor = db.query(MovieContract.MovieEntry.TABLE_NAME, null, null, null, null, null, null);
+        assertNotNull(cursor);
     }
 
 }

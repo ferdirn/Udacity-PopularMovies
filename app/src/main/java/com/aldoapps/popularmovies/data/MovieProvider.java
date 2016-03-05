@@ -35,6 +35,7 @@ public class MovieProvider {
 
     public void close(){
         mDbHelper.close();
+        mDatabase.close();
     }
 
     public void insertMovie(MovieDetail movie){
@@ -59,26 +60,27 @@ public class MovieProvider {
         String whereClause = MovieEntry.COL0_MOVIE_ID + " = ?";
         Cursor movieCursor = mDatabase.query(MovieEntry.TABLE_NAME, null, whereClause,
                 new String[]{ String.valueOf(movieId) },
-                null, null, null);
+                null, null, null); //293660
         return convertCursorToMovie(movieCursor);
     }
 
     private MovieDetail convertCursorToMovie(Cursor cursor) {
         MovieDetail movieDetail = new MovieDetail();
-        if(cursor.moveToFirst()){
-            while(!cursor.isAfterLast()){
-                movieDetail.setId(cursor.getInt(0));
-                movieDetail.setPosterPath(cursor.getString(1));
-                movieDetail.setBackdropPath(cursor.getString(2));
-                movieDetail.setTitle(cursor.getString(3));
-                movieDetail.setReleaseDate(cursor.getString(4));
-                movieDetail.setRuntime(cursor.getInt(5));
-                movieDetail.setVoteAverage(cursor.getDouble(6));
-                movieDetail.setVoteCount(cursor.getInt(7));
-                movieDetail.setTagline(cursor.getString(8));
-                movieDetail.setOverview(cursor.getString(9));
-            }
-        }
+        cursor.moveToFirst();
+        Log.d("asdf", "judul " + cursor.getString(4));
+        Log.d("asdf", "poster path + backdrop " + cursor.getString(2));
+        Log.d("asdf", "over view " + cursor.getString(10));
+
+        movieDetail.setId(cursor.getInt(1));
+        movieDetail.setPosterPath(cursor.getString(2));
+        movieDetail.setBackdropPath(cursor.getString(3));
+        movieDetail.setTitle(cursor.getString(4));
+        movieDetail.setReleaseDate(cursor.getString(5));
+        movieDetail.setRuntime(cursor.getInt(6));
+        movieDetail.setVoteAverage(cursor.getDouble(7));
+        movieDetail.setVoteCount(cursor.getInt(8));
+        movieDetail.setTagline(cursor.getString(9));
+        movieDetail.setOverview(cursor.getString(10));
         cursor.close();
         return movieDetail;
     }
