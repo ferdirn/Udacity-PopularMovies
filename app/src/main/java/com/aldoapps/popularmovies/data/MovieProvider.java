@@ -1,0 +1,86 @@
+package com.aldoapps.popularmovies.data;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.aldoapps.popularmovies.data.MovieContract.MovieEntry;
+
+import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
+
+import java.sql.SQLException;
+
+/**
+ * Created by aldokelvianto on 3/5/16.
+ */
+public class MovieProvider {
+    private SQLiteDatabase mDatabase;
+    private MovieDbHelper mDbHelper;
+
+    public MovieProvider(Context context){
+        mDbHelper = new MovieDbHelper(context);
+
+        try {
+            open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void open() throws SQLException{
+        mDatabase = mDbHelper.getWritableDatabase();
+    }
+
+    public void close(){
+        mDbHelper.close();
+    }
+
+    public void insertMovie(MovieDetail movie){
+        ContentValues values = new ContentValues();
+        values.put(MovieEntry.COL0_MOVIE_ID, movie.getId());
+        values.put(MovieEntry.COL1_POSTER, movie.getPosterPath());
+        values.put(MovieEntry.COL2_BACKDROP, movie.getBackdropPath());
+        values.put(MovieEntry.COL3_TITLE, movie.getTitle());
+        values.put(MovieEntry.COL4_YEAR, movie.getReleaseYear());
+        values.put(MovieEntry.COL5_RUNTIME, movie.getRuntime());
+        values.put(MovieEntry.COL6_VOTE_AVERAGE, movie.getVoteAverage());
+        values.put(MovieEntry.COL7_VOTE_COUNT, movie.getVoteCount());
+        values.put(MovieEntry.COL8_TAGLINE, movie.getTagline());
+        values.put(MovieEntry.COL9_OVERVIEW, movie.getOverview());
+
+        long hasil = mDatabase.insert(MovieEntry.TABLE_NAME, null, values);
+        Log.d("asdf", "hasil id " + hasil);
+
+    }
+
+    public MovieDetail getMovie(int movieId){
+        String whereClause = MovieEntry.COL0_MOVIE_ID + " = ?";
+        Cursor movieCursor = mDatabase.query(MovieEntry.TABLE_NAME, null, whereClause,
+                new String[]{ String.valueOf(movieId) },
+                null, null, null);
+        return convertCursorToMovie(movieCursor);
+    }
+
+    private MovieDetail convertCursorToMovie(Cursor cursor) {
+        MovieDetail movieDetail = new MovieDetail();
+        if(cursor.moveToFirst()){
+            while(!cursor.isAfterLast()){
+                movieDetail.setId(cursor.getInt(0));
+                movieDetail.setPosterPath(cursor.getString(1));
+                movieDetail.setBackdropPath(cursor.getString(2));
+                movieDetail.setTitle(cursor.getString(3));
+                movieDetail.setReleaseDate(cursor.getString(4));
+                movieDetail.setRuntime(cursor.getInt(5));
+                movieDetail.setVoteAverage(cursor.getDouble(6));
+                movieDetail.setVoteCount(cursor.getInt(7));
+                movieDetail.setTagline(cursor.getString(8));
+                movieDetail.setOverview(cursor.getString(9));
+            }
+        }
+        cursor.close();
+        return movieDetail;
+    }
+
+}

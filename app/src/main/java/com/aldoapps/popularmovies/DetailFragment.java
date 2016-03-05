@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.aldoapps.popularmovies.adapter.CommentAdapter;
 import com.aldoapps.popularmovies.adapter.TrailerAdapter;
 import com.aldoapps.popularmovies.data.MovieContract;
+import com.aldoapps.popularmovies.data.MovieProvider;
 import com.aldoapps.popularmovies.data.PaperMovie;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 import com.aldoapps.popularmovies.model.review.Review;
@@ -115,7 +116,7 @@ public class DetailFragment extends Fragment {
                         .into(mPoster);
 
                 mName.setText(movie.getTitle());
-                mYear.setText(MovieContract.parseMovieYear(movie.getReleaseDate()));
+                mYear.setText(movie.getReleaseYear());
                 mDuration.setText(String.valueOf(movie.getRuntime()));
                 mSummary.setText(movie.getOverview());
                 mRating.setText(String.valueOf(movie.getVoteAverage()) + " / 10");
@@ -180,6 +181,22 @@ public class DetailFragment extends Fragment {
                     .into(mMoviePosterTwo);
         }
 
+        mSummary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MovieProvider provider = new MovieProvider(getActivity());
+                MovieDetail asdf = provider.getMovie(mMovie.getId());
+                if(asdf != null && asdf.getTitle() != null){
+                    Log.d("asdf", "judul " + asdf.getTitle());
+                    Log.d("asdf", "poster path + backdrop " + asdf.getBackdropPath());
+                    Log.d("asdf", "over view " + asdf.getOverview());
+                }else{
+                    Log.d("asdf", "no such movie (null)");
+                }
+                provider.close();
+            }
+        });
+
         mCommentAdapter.notifyDataSetChanged();
         mCommentListView.setAdapter(mCommentAdapter);
         mCommentListView.setAdapter(new SlideExpandableListAdapter(
@@ -214,8 +231,13 @@ public class DetailFragment extends Fragment {
     }
 
     private void saveFavoriteMovieTask() {
-        new ImageTask().execute(mMovie.getPosterPath());
+        MovieProvider movieProvider = new MovieProvider(getActivity());
+        movieProvider.insertMovie(mMovie);
+        movieProvider.close();
+//        new ImageTask().execute(mMovie.getPosterPath());
     }
+
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

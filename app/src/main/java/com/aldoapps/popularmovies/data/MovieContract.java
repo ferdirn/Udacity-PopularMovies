@@ -27,27 +27,20 @@ public class MovieContract {
 
         public static final String TABLE_NAME = "movie";
 
-        public static final class Cols{
-            public static final String POSTER = "poster";
-            public static final String BACKDROP = "backdrop";
-            public static final String TITLE = "title";
-            public static final String YEAR = "year";   // INT
-            public static final String DURATION = "duration"; // INT runtime
-            public static final String RATING = "rating"; // vote average
-            public static final String VOTE_COUNT = "votecount"; // INT
-            public static final String TAGLINE = "tagline";
-            public static final String SUMMARY = "summary";
-            public static final String TRAILER_LINK = "trailer";
-            public static final String REVIEW_CONTENT = "review_content";
-            public static final String REVIEW_AUTHOR = "review_author";
-        }
+        // _ID is for sqlite auto increment
+        public static final String COL0_MOVIE_ID = "movie_id"; // id from tmdb
+        public static final String COL1_POSTER = "poster";
+        public static final String COL2_BACKDROP = "backdrop";
+        public static final String COL3_TITLE = "title";
+        public static final String COL4_YEAR = "year";   // INT
+        public static final String COL5_RUNTIME = "runtime"; // INT runtime
+        public static final String COL6_VOTE_AVERAGE = "vote_average"; // vote average
+        public static final String COL7_VOTE_COUNT = "vote_count"; // INT
+        public static final String COL8_TAGLINE = "tagline";
+        public static final String COL9_OVERVIEW = "overview";
 
         public static final Uri buildMovieUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-    }
-
-    public static String parseMovieYear(String releaseDate){
-        return releaseDate.substring(0, 4);
     }
 }

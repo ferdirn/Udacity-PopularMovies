@@ -426,6 +426,14 @@ public class MovieDetail {
         return releaseDate;
     }
 
+    public String getReleaseYear(){
+        return releaseDate.substring(0, 4);
+    }
+
+    public static String parseMovieYear(String completeReleaseDate){
+        return completeReleaseDate.substring(0, 4);
+    }
+
     /**
      *
      * @param releaseDate
