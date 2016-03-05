@@ -14,6 +14,16 @@ import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
  */
 public class TestDb extends AndroidTestCase {
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
+
     public void testCreateDb() throws Throwable {
         // delete first, to make sure we're doing clean test
         mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME);

@@ -45,10 +45,7 @@ public class MainFragment extends Fragment {
     private List<Movie> mMovieList = new ArrayList<>();
     private String mSortByValue = "";
 
-    public MainFragment() {
-    }
-
-
+    public MainFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
