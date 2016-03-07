@@ -4,14 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.aldoapps.popularmovies.data.MovieContract.MovieEntry;
 
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 
-import java.io.OutputStream;
 import java.sql.SQLException;
 
 /**
@@ -50,8 +48,9 @@ public class MovieProvider {
         values.put(MovieEntry.COL5_RUNTIME, movie.getRuntime());
         values.put(MovieEntry.COL6_VOTE_AVERAGE, movie.getVoteAverage());
         values.put(MovieEntry.COL7_VOTE_COUNT, movie.getVoteCount());
-        values.put(MovieEntry.COL8_TAGLINE, movie.getTagline());
-        values.put(MovieEntry.COL9_OVERVIEW, movie.getOverview());
+        values.put(MovieEntry.COL8_POPULARITY, movie.getPopularity());
+        values.put(MovieEntry.COL9_TAGLINE, movie.getTagline());
+        values.put(MovieEntry.COL10_OVERVIEW, movie.getOverview());
 
         long hasil = mDatabase.insert(MovieEntry.TABLE_NAME, null, values);
         Log.d("asdf", "hasil id " + hasil);
@@ -80,8 +79,9 @@ public class MovieProvider {
         movieDetail.setRuntime(cursor.getInt(6));
         movieDetail.setVoteAverage(cursor.getDouble(7));
         movieDetail.setVoteCount(cursor.getInt(8));
-        movieDetail.setTagline(cursor.getString(9));
-        movieDetail.setOverview(cursor.getString(10));
+        movieDetail.setPopularity(cursor.getDouble(9));
+        movieDetail.setTagline(cursor.getString(10));
+        movieDetail.setOverview(cursor.getString(11));
         cursor.close();
         return movieDetail;
     }

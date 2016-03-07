@@ -36,8 +36,9 @@ public class MovieContract {
         public static final String COL5_RUNTIME = "runtime"; // INT runtime
         public static final String COL6_VOTE_AVERAGE = "vote_average"; // vote average
         public static final String COL7_VOTE_COUNT = "vote_count"; // INT
-        public static final String COL8_TAGLINE = "tagline";
-        public static final String COL9_OVERVIEW = "overview";
+        public static final String COL8_POPULARITY = "popularity";
+        public static final String COL9_TAGLINE = "tagline";
+        public static final String COL10_OVERVIEW = "overview";
 
         public static final Uri buildMovieUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);

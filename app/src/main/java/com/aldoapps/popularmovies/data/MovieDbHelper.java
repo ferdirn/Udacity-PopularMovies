@@ -18,10 +18,11 @@ public class MovieDbHelper extends SQLiteOpenHelper {
             + MovieContract.MovieEntry.COL3_TITLE + " TEXT NOT NULL, "
             + MovieContract.MovieEntry.COL4_YEAR + " INTEGER NOT NULL, "
             + MovieContract.MovieEntry.COL5_RUNTIME + " INTEGER NOT NULL, "
-            + MovieContract.MovieEntry.COL6_VOTE_AVERAGE + " TEXT NOT NULL, "
+            + MovieContract.MovieEntry.COL6_VOTE_AVERAGE + " REAL NOT NULL, "
             + MovieContract.MovieEntry.COL7_VOTE_COUNT + " INTEGER NOT NULL, "
-            + MovieContract.MovieEntry.COL8_TAGLINE + " TEXT NOT NULL, "
-            + MovieContract.MovieEntry.COL9_OVERVIEW + " TEXT NOT NULL "
+            + MovieContract.MovieEntry.COL8_POPULARITY + " REAL NOT NULL, "
+            + MovieContract.MovieEntry.COL9_TAGLINE + " TEXT NOT NULL, "
+            + MovieContract.MovieEntry.COL10_OVERVIEW + " TEXT NOT NULL "
             + " );";
 
     // Changing database schema requires you to change DB Version

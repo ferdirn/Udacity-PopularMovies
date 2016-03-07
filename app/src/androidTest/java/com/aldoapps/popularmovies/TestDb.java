@@ -57,8 +57,8 @@ public class TestDb extends AndroidTestCase {
         values.put(MovieContract.MovieEntry.COL5_RUNTIME, movie.getRuntime());
         values.put(MovieContract.MovieEntry.COL6_VOTE_AVERAGE, movie.getVoteAverage());
         values.put(MovieContract.MovieEntry.COL7_VOTE_COUNT, movie.getVoteCount());
-        values.put(MovieContract.MovieEntry.COL8_TAGLINE, movie.getTagline());
-        values.put(MovieContract.MovieEntry.COL9_OVERVIEW, movie.getOverview());
+        values.put(MovieContract.MovieEntry.COL9_TAGLINE, movie.getTagline());
+        values.put(MovieContract.MovieEntry.COL10_OVERVIEW, movie.getOverview());
 
         MovieDbHelper db = new MovieDbHelper(this.mContext);
 

@@ -21,14 +21,14 @@ public class MainActivity extends SingleFragmentActivity {
     protected void onPause() {
         super.onPause();
 
-        Log.d("asdf", "Main Activity on Pause called");
+//        Log.d("asdf", "Main Activity on Pause called");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.d("asdf", "Main Activity on Destroy called");
+//        Log.d("asdf", "Main Activity on Destroy called");
     }
 
 //    @Override
