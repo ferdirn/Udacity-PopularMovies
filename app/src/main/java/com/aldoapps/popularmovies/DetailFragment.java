@@ -1,8 +1,11 @@
 package com.aldoapps.popularmovies;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -27,9 +30,9 @@ import com.aldoapps.popularmovies.model.trailer.Trailer;
 import com.aldoapps.popularmovies.model.trailer.TrailerResponse;
 import com.aldoapps.popularmovies.tjerkw.slideexpandable.library.SlideExpandableListAdapter;
 import com.aldoapps.popularmovies.util.MovieConst;
+import com.aldoapps.popularmovies.util.SingleMediaScanner;
 import com.aldoapps.popularmovies.util.UrlUtil;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -112,10 +115,10 @@ public class DetailFragment extends Fragment {
                         + MovieConst.DIR_NAME + "/" + String.valueOf(mMovie.getId()) + ".png";
                 File file = new File(completePath, String.valueOf(mMovie.getId()) + ".png");
 //                mPoster.setImageDrawable(Drawable.createFromPath(file.getAbsolutePath()));
-                mPoster.setImageDrawable(Drawable.createFromPath(completePath));
-//                Glide.with(getActivity())
-//                        .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
-//                        .into(mPoster);
+//                mPoster.setImageDrawable(Drawable.createFromPath(completePath));
+                Picasso.with(getActivity())
+                        .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
+                        .into(mPoster);
 
                 mName.setText(movie.getTitle());
                 mYear.setText(movie.getReleaseYear());
@@ -212,8 +215,7 @@ public class DetailFragment extends Fragment {
         Bitmap bitmap;
         OutputStream outputStream;
 
-//        bitmap = ((BitmapDrawable) mPoster.getDrawable()).getBitmap();
-        bitmap = ((GlideBitmapDrawable) mPoster.getDrawable()).getBitmap();
+        bitmap = ((BitmapDrawable) mPoster.getDrawable()).getBitmap();
 
         File filePath = Environment.getExternalStorageDirectory();
 
@@ -229,6 +231,16 @@ public class DetailFragment extends Fragment {
             outputStream.flush();
             outputStream.close();
             Toast.makeText(getActivity(), "Saved!", Toast.LENGTH_SHORT).show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://"
+                                + Environment.getExternalStorageDirectory())));
+            } else {
+                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+                        Uri.parse("file://"
+                                + Environment.getExternalStorageDirectory())));
+            }
+            new SingleMediaScanner(getActivity(), imageFile);
         } catch (IOException e) {
             Log.d("asdf", "error karena " + e.getMessage());
         }

@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.aldoapps.popularmovies.R;
 import com.aldoapps.popularmovies.model.trailer.Trailer;
 import com.aldoapps.popularmovies.util.UrlUtil;
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class TrailerAdapter extends BaseAdapter{
         String thumbnailUrl = UrlUtil.getVideoThumbnail(mTrailer.get(0).getKey());
 
         ImageView trailerThumbnail = (ImageView) convertView.findViewById(R.id.trailer_image);
-        Glide.with(mContext).load(thumbnailUrl).into(trailerThumbnail);
+        Picasso.with(mContext).load(thumbnailUrl).into(trailerThumbnail);
 
         TextView trailerNumber = (TextView) convertView.findViewById(R.id.trailer_name);
         trailerNumber.setText(mContext.getString(R.string.trailer) + " " + (position + 1));
