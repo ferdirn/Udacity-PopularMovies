@@ -4,12 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.aldoapps.popularmovies.data.MovieContract.MovieEntry;
 
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 
+import java.io.OutputStream;
 import java.sql.SQLException;
 
 /**
@@ -53,7 +55,6 @@ public class MovieProvider {
 
         long hasil = mDatabase.insert(MovieEntry.TABLE_NAME, null, values);
         Log.d("asdf", "hasil id " + hasil);
-
     }
 
     public MovieDetail getMovie(int movieId){

@@ -27,4 +27,5 @@ public class MovieConst{
     public static final String BACKDROP_SIZE_PARAM = "/w500";
 
     public static final int DEFAULT_VALUE = 0;
+    public static final String DIR_NAME = "/PopularMovies";
 }

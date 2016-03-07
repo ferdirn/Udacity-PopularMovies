@@ -1,8 +1,13 @@
 package com.aldoapps.popularmovies;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +16,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aldoapps.popularmovies.adapter.CommentAdapter;
 import com.aldoapps.popularmovies.adapter.TrailerAdapter;
-import com.aldoapps.popularmovies.data.MovieProvider;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 import com.aldoapps.popularmovies.model.review.Review;
 import com.aldoapps.popularmovies.model.review.ReviewResponse;
@@ -24,7 +29,12 @@ import com.aldoapps.popularmovies.tjerkw.slideexpandable.library.SlideExpandable
 import com.aldoapps.popularmovies.util.MovieConst;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,9 +108,14 @@ public class DetailFragment extends Fragment {
             public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
                 MovieDetail movie = response.body();
                 mMovie = movie;
-                Glide.with(getActivity())
-                        .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
-                        .into(mPoster);
+                String completePath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + MovieConst.DIR_NAME + "/" + String.valueOf(mMovie.getId()) + ".png";
+                File file = new File(completePath, String.valueOf(mMovie.getId()) + ".png");
+//                mPoster.setImageDrawable(Drawable.createFromPath(file.getAbsolutePath()));
+                mPoster.setImageDrawable(Drawable.createFromPath(completePath));
+//                Glide.with(getActivity())
+//                        .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
+//                        .into(mPoster);
 
                 mName.setText(movie.getTitle());
                 mYear.setText(movie.getReleaseYear());
@@ -194,12 +209,34 @@ public class DetailFragment extends Fragment {
     }
 
     private void saveFavoriteMovieTask() {
-        MovieProvider movieProvider = new MovieProvider(getActivity());
-        movieProvider.insertMovie(mMovie);
-        movieProvider.close();
+        Bitmap bitmap;
+        OutputStream outputStream;
+
+//        bitmap = ((BitmapDrawable) mPoster.getDrawable()).getBitmap();
+        bitmap = ((GlideBitmapDrawable) mPoster.getDrawable()).getBitmap();
+
+        File filePath = Environment.getExternalStorageDirectory();
+
+        File imageDir = new File(filePath.getAbsolutePath() + MovieConst.DIR_NAME);
+        if(!imageDir.exists()){
+            imageDir.mkdir();
+        }
+        File imageFile = new File(imageDir, String.valueOf(mMovie.getId()) + ".png");
+
+        try {
+            outputStream = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            Toast.makeText(getActivity(), "Saved!", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Log.d("asdf", "error karena " + e.getMessage());
+        }
+
+//        MovieProvider movieProvider = new MovieProvider(getActivity());
+//        movieProvider.insertMovie(mMovie);
+//        movieProvider.close();
     }
-
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
