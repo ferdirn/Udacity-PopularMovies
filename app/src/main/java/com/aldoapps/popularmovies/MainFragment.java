@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;

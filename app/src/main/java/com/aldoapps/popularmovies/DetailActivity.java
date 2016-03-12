@@ -2,9 +2,13 @@ package com.aldoapps.popularmovies;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.aldoapps.popularmovies.util.MovieConst;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Created by user on 03/09/2015.
@@ -16,6 +20,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
 
         if(getIntent() != null){
             int movieId = getIntent().getIntExtra(MovieConst.KEY, MovieConst.DEFAULT_VALUE);
