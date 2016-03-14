@@ -44,7 +44,7 @@ public class UrlUtil {
         try{
             intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
         }catch (ActivityNotFoundException ex){
-            intent=new Intent(Intent.ACTION_VIEW,
+            intent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://www.youtube.com/watch?v="+id));
         }finally {
             return intent;

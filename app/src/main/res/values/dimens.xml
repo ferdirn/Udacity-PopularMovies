@@ -14,4 +14,8 @@
     <dimen name="text_large">20sp</dimen>
     <dimen name="text_extra_large">30sp</dimen>
 
+    <!-- Image Size -->
+    <dimen name="image_size_small">50dp</dimen>
+    <dimen name="image_size_medium">80dp</dimen>
+
 </resources>

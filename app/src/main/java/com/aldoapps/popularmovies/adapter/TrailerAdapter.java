@@ -1,6 +1,7 @@
 package com.aldoapps.popularmovies.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,52 +14,59 @@ import com.aldoapps.popularmovies.model.trailer.Trailer;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by user on 19/10/2015.
  */
-public class TrailerAdapter extends BaseAdapter{
+public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder>{
 
-    private Context mContext;
-    private List<Trailer> mTrailer;
-    private LayoutInflater mInflater;
+    List<Trailer> mTrailers;
 
-    public TrailerAdapter(Context context, List<Trailer> trailers) {
-        mTrailer = trailers;
-        mContext = context;
-        mInflater = LayoutInflater.from(context);
+    public TrailerAdapter(List<Trailer> trailers){
+        mTrailers = trailers;
     }
 
     @Override
-    public int getCount() {
-        return mTrailer.size();
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer_item,
+                parent, false);
+        ViewHolder viewHolder = new ViewHolder(v);
+        return viewHolder;
     }
 
     @Override
-    public Trailer getItem(int position) {
-        return mTrailer.get(position);
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final String movieKey = mTrailers.get(position).getKey();
+        String thumbnailUrl = UrlUtil.getVideoThumbnail(movieKey);
+
+        Picasso.with(holder.mImageView.getContext())
+                .load(thumbnailUrl)
+                .into(holder.mImageView);
+
+        holder.mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.mImageView.getContext().startActivity(UrlUtil.watchYoutubeVideo(movieKey));
+            }
+        });
     }
 
     @Override
-    public long getItemId(int position) {
-        return 0;
+    public int getItemCount() {
+        return mTrailers.size();
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        convertView = mInflater.inflate(R.layout.trailer_item, parent, false);
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
-        String thumbnailUrl = UrlUtil.getVideoThumbnail(mTrailer.get(0).getKey());
+        ImageView mImageView;
 
-        ImageView trailerThumbnail = (ImageView) convertView.findViewById(R.id.trailer_image);
-        Picasso.with(mContext).load(thumbnailUrl).into(trailerThumbnail);
+        public ViewHolder(View itemView) {
+            super(itemView);
 
-        TextView trailerNumber = (TextView) convertView.findViewById(R.id.trailer_name);
-        trailerNumber.setText(mContext.getString(R.string.trailer) + " " + (position + 1));
-
-        return convertView;
+            mImageView = (ImageView) itemView.findViewById(R.id.trailer_image);
+        }
     }
-
 
 }

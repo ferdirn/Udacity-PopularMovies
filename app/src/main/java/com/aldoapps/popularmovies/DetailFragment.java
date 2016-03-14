@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -57,7 +60,7 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.movie_duration) TextView mDuration;
     @Bind(R.id.movie_summary) TextView mSummary;
     @Bind(R.id.mark_as_favorite) Button mFavorite;
-    @Bind(R.id.trailer_list) ListView mTrailerListView;
+    @Bind(R.id.trailer_list) RecyclerView mTrailerListView;
     @Bind(R.id.comment_list) ListView mCommentListView;
 
     private MovieConst mMovieConst;
@@ -88,9 +91,6 @@ public class DetailFragment extends Fragment {
         if(getArguments() != null){
             mMovieId = getArguments().getInt(MovieConst.KEY);
         }
-
-        mTrailerAdapter = new TrailerAdapter(getActivity(), mTrailers);
-        mCommentAdapter = new CommentAdapter(getActivity(), mComments);
     }
 
     public void enqueueFetchMovieDetail(final int movieId){
@@ -174,7 +174,9 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
 
-        mCommentAdapter.notifyDataSetChanged();
+        mTrailerAdapter = new TrailerAdapter(mTrailers);
+        mCommentAdapter = new CommentAdapter(getActivity(), mComments);
+
         mCommentListView.setAdapter(mCommentAdapter);
         mCommentListView.setAdapter(new SlideExpandableListAdapter(
                 mCommentAdapter,
@@ -182,18 +184,15 @@ public class DetailFragment extends Fragment {
                 R.id.expandable
         ));
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        mTrailerListView.setAdapter(mTrailerAdapter);
+        mTrailerListView.setLayoutManager(layoutManager);
+
         mFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveFavoriteMovieTask();
-            }
-        });
-
-        mTrailerListView.setAdapter(mTrailerAdapter);
-        mTrailerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(UrlUtil.watchYoutubeVideo(mTrailerAdapter.getItem(position).getKey()));
             }
         });
 
