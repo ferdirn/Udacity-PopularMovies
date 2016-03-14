@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -59,7 +60,7 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.movie_rating) TextView mRating;
     @Bind(R.id.movie_duration) TextView mDuration;
     @Bind(R.id.movie_summary) TextView mSummary;
-    @Bind(R.id.mark_as_favorite) Button mFavorite;
+    @Bind(R.id.mark_as_favorite) FloatingActionButton mFavorite;
     @Bind(R.id.trailer_list) RecyclerView mTrailerListView;
     @Bind(R.id.comment_list) ListView mCommentListView;
     @Bind(R.id.backdrop) ImageView mBackdrop;
@@ -127,7 +128,7 @@ public class DetailFragment extends Fragment {
 
                 mCollapsingToolbar.setTitle(mMovie.getTitle());
                 mYear.setText(movie.getReleaseYear());
-                mDuration.setText(String.valueOf(movie.getRuntime()));
+                mDuration.setText(getString(R.string.duration, movie.getRuntime()));
                 mSummary.setText(movie.getOverview());
                 mRating.setText(String.valueOf(movie.getVoteAverage()) + " / 10");
             }

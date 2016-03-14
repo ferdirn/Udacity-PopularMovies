@@ -20,12 +20,10 @@ import java.util.List;
 public class CommentAdapter extends BaseAdapter {
 
     private List<Review> mComments;
-    private Context mContext;
     private LayoutInflater mInflater;
 
     public CommentAdapter(Context context, List<Review> comments) {
         mComments = comments;
-        mContext = context;
         mInflater = LayoutInflater.from(context);
     }
 
