@@ -15,7 +15,7 @@ import org.w3c.dom.Comment;
 import java.util.List;
 
 /**
- * Created by user on 20/10/2015.
+ * created by aldokelvianto on 20/10/2015.
  */
 public class CommentAdapter extends BaseAdapter {
 

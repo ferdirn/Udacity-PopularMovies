@@ -11,7 +11,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Created by user on 03/09/2015.
+ * Created by aldokelvianto on 03/09/2015.
  */
 public class DetailActivity extends AppCompatActivity {
 

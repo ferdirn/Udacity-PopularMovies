@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,12 +50,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by user on 03/09/2015.
+ * Created by aldokelvianto on 03/09/2015.
  */
 public class DetailFragment extends Fragment {
 
     @Bind(R.id.movie_poster) ImageView mPoster;
-    @Bind(R.id.movie_title) TextView mName;
     @Bind(R.id.movie_year) TextView mYear;
     @Bind(R.id.movie_rating) TextView mRating;
     @Bind(R.id.movie_duration) TextView mDuration;
@@ -62,6 +62,9 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.mark_as_favorite) Button mFavorite;
     @Bind(R.id.trailer_list) RecyclerView mTrailerListView;
     @Bind(R.id.comment_list) ListView mCommentListView;
+    @Bind(R.id.backdrop) ImageView mBackdrop;
+    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     private MovieConst mMovieConst;
     private int mMovieId = 0;
@@ -91,6 +94,8 @@ public class DetailFragment extends Fragment {
         if(getArguments() != null){
             mMovieId = getArguments().getInt(MovieConst.KEY);
         }
+
+        setHasOptionsMenu(true);
     }
 
     public void enqueueFetchMovieDetail(final int movieId){
@@ -112,11 +117,15 @@ public class DetailFragment extends Fragment {
                 File file = new File(completePath, String.valueOf(mMovie.getId()) + ".png");
 //                mPoster.setImageDrawable(Drawable.createFromPath(file.getAbsolutePath()));
 //                mPoster.setImageDrawable(Drawable.createFromPath(completePath));
-                Picasso.with(getActivity())
+                Picasso.with(getContext())
                         .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
                         .into(mPoster);
 
-                mName.setText(movie.getTitle());
+                Picasso.with(getContext())
+                        .load(UrlUtil.generateBackdropUrl(movie.getBackdropPath()))
+                        .into(mBackdrop);
+
+                mCollapsingToolbar.setTitle(mMovie.getTitle());
                 mYear.setText(movie.getReleaseYear());
                 mDuration.setText(String.valueOf(movie.getRuntime()));
                 mSummary.setText(movie.getOverview());
@@ -176,6 +185,9 @@ public class DetailFragment extends Fragment {
 
         mTrailerAdapter = new TrailerAdapter(mTrailers);
         mCommentAdapter = new CommentAdapter(getActivity(), mComments);
+
+        ((DetailActivity) getActivity()).setSupportActionBar(mToolbar);
+        ((DetailActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mCommentListView.setAdapter(mCommentAdapter);
         mCommentListView.setAdapter(new SlideExpandableListAdapter(

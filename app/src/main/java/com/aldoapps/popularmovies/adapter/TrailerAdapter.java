@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by user on 19/10/2015.
+ * created by aldokelvianto on 19/10/2015.
  */
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder>{
 

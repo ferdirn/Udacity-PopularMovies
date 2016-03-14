@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Various util colors -->
+    <color name="white">#ffffff</color>
+    <color name="gray_shade">#d8d8d8</color>
+    <color name="white_transparent">#88ffffff</color>
+
+    <!-- Brand related colors -->
+    <color name="brand_main">@color/blue_700</color>
+    <color name="brand_main_dark">@color/blue_900</color>
+
+    <!-- 5 shades of gray -->
+    <color name="gray_darker">#222</color>
+    <color name="gray_dark">#333</color>
+    <color name="gray">#555</color>
+    <color name="gray_light">#999</color>
+    <color name="gray_lighter">#eee</color>
+
+    <!-- Goole material design color -->
+    <color name="blue_50">#E3F2FD</color>
+    <color name="blue_100">#BBDEFB</color>
+    <color name="blue_200">#90CAF9</color>
+    <color name="blue_300">#64B5F6</color>
+    <color name="blue_400">#42A5F5</color>
+    <color name="blue_500">#2196F3</color>
+    <color name="blue_600">#1E88E5</color>
+    <color name="blue_700">#1976D2</color>
+    <color name="blue_800">#1565C0</color>
+    <color name="blue_900">#0D47A1</color>
+</resources>

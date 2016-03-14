@@ -18,4 +18,12 @@
     <dimen name="image_size_small">50dp</dimen>
     <dimen name="image_size_medium">80dp</dimen>
 
+    <!-- Material Design -->
+    <dimen name="card_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="detail_backdrop_height">256dp</dimen>
+    <dimen name="title_margin_start">48dp</dimen>
+    <dimen name="title_margin_end">64dp</dimen>
+    <dimen name="header_padding">24dp</dimen>
+
 </resources>
