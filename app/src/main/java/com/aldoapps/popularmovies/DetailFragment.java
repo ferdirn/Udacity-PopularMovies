@@ -39,8 +39,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -66,6 +71,8 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.backdrop) ImageView mBackdrop;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.budget) TextView mBudget;
+    @Bind(R.id.popularity) TextView mPopularity;
 
     private MovieConst mMovieConst;
     private int mMovieId = 0;
@@ -130,7 +137,19 @@ public class DetailFragment extends Fragment {
                 mYear.setText(movie.getReleaseYear());
                 mDuration.setText(getString(R.string.duration, movie.getRuntime()));
                 mSummary.setText(movie.getOverview());
-                mRating.setText(String.valueOf(movie.getVoteAverage()) + " / 10");
+                mRating.setText(String.valueOf(movie.getVoteAverage()));
+                Formatter formatter = new Formatter();
+                mPopularity.setText(formatter.format("%.2f", movie.getPopularity()).toString());
+                if(movie.getBudget() == 0){
+                    mBudget.setVisibility(View.GONE);
+                }else{
+                    DecimalFormat customDF = new DecimalFormat("#,###");
+                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                    symbols.setDecimalSeparator(',');
+                    symbols.setGroupingSeparator('.');
+                    customDF.setDecimalFormatSymbols(symbols);
+                    mBudget.setText(customDF.format(movie.getBudget()));
+                }
             }
 
             @Override
@@ -165,7 +184,7 @@ public class DetailFragment extends Fragment {
             @Override
             public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
                 mComments.clear();
-                for(Review review : response.body().getResults()){
+                for (Review review : response.body().getResults()) {
                     mComments.add(review);
                 }
                 mCommentAdapter.notifyDataSetChanged();
