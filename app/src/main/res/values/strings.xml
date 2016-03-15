@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Popular Movies</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_sort_by">Sort by</string>
     <string name="movie_title">Chappie</string>
     <string name="movie_year">2015</string>
     <string name="movie_duration">120 minutes</string>

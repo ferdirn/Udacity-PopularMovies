@@ -8,9 +8,12 @@ import android.util.Log;
 
 import com.aldoapps.popularmovies.data.MovieContract.MovieEntry;
 
+import com.aldoapps.popularmovies.model.discover.Movie;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by aldokelvianto on 3/5/16.
@@ -53,24 +56,38 @@ public class MovieProvider {
         values.put(MovieEntry.COL10_BUDGET, movie.getBudget());
         values.put(MovieEntry.COL11_OVERVIEW, movie.getOverview());
 
-        long hasil = mDatabase.insert(MovieEntry.TABLE_NAME, null, values);
-        Log.d("asdf", "hasil id " + hasil);
+        mDatabase.insert(MovieEntry.TABLE_NAME, null, values);
     }
 
-    public MovieDetail getMovie(int movieId){
-        String whereClause = MovieEntry.COL0_MOVIE_ID + " = ?";
+    public boolean isMovieExistOnDb(int movieId){
+        String whereClause = MovieEntry.COL0_MOVIE_ID + " = ? ";
+        Cursor cursor = mDatabase.query(MovieEntry.TABLE_NAME, null, whereClause,
+                new String[]{ String.valueOf(movieId)}, null, null, null);
+        if(cursor.moveToFirst()){
+            return true;
+        }
+        cursor.close();
+        return false;
+    }
+
+    public void deleteMovie(int movieId){
+        mDatabase.delete(MovieEntry.TABLE_NAME, MovieEntry.COL0_MOVIE_ID + " = ?", new String[]{
+                String.valueOf(movieId)});
+    }
+
+    public MovieDetail getMovieDetail(int movieId){
+        String whereClause = MovieEntry.COL0_MOVIE_ID + " = ? ";
         Cursor movieCursor = mDatabase.query(MovieEntry.TABLE_NAME, null, whereClause,
                 new String[]{ String.valueOf(movieId) },
                 null, null, null); //293660
-        return convertCursorToMovie(movieCursor);
+        movieCursor.moveToFirst();
+        MovieDetail movieDetail = convertCursorToMovieDetail(movieCursor);
+        movieCursor.close();
+        return movieDetail;
     }
 
-    private MovieDetail convertCursorToMovie(Cursor cursor) {
+    private MovieDetail convertCursorToMovieDetail(Cursor cursor) {
         MovieDetail movieDetail = new MovieDetail();
-        cursor.moveToFirst();
-        Log.d("asdf", "judul " + cursor.getString(4));
-        Log.d("asdf", "poster path + backdrop " + cursor.getString(2));
-        Log.d("asdf", "over view " + cursor.getString(10));
 
         movieDetail.setId(cursor.getInt(1));
         movieDetail.setPosterPath(cursor.getString(2));
@@ -84,8 +101,32 @@ public class MovieProvider {
         movieDetail.setTagline(cursor.getString(10));
         movieDetail.setBudget(cursor.getInt(11));
         movieDetail.setOverview(cursor.getString(12));
-        cursor.close();
+
         return movieDetail;
     }
 
+    private Movie convertCursorToMovie(Cursor cursor) {
+        Movie movie = new Movie();
+
+        movie.setId(cursor.getInt(1));
+        movie.setPosterPath(cursor.getString(2));
+        movie.setTitle(cursor.getString(4));
+
+        return movie;
+    }
+
+
+    public List<Movie> getAllMovie() {
+        Cursor movieCursor = mDatabase.query(MovieEntry.TABLE_NAME, null,
+                null, new String[]{}, null, null, null);
+
+        List<Movie> movieList = new ArrayList<>();
+        if(movieCursor.moveToFirst()){
+            while (!movieCursor.isAfterLast()){
+                movieList.add(convertCursorToMovie(movieCursor));
+                movieCursor.moveToNext();
+            }
+        }
+        return movieList;
+    }
 }

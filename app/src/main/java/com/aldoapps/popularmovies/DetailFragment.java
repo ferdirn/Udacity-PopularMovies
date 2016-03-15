@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 
 import com.aldoapps.popularmovies.adapter.CommentAdapter;
 import com.aldoapps.popularmovies.adapter.TrailerAdapter;
+import com.aldoapps.popularmovies.data.FlagPreference;
 import com.aldoapps.popularmovies.data.MovieProvider;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 import com.aldoapps.popularmovies.model.review.Review;
@@ -70,6 +74,10 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.budget) TextView mBudget;
     @Bind(R.id.popularity) TextView mPopularity;
+
+    // Containers
+    @Bind(R.id.comment_container) View mCommentContainer;
+    @Bind(R.id.trailer_container) View mTrailerContainer;
 
     private MovieConst mMovieConst;
     private int mMovieId = 0;
@@ -200,6 +208,9 @@ public class DetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, view);
 
+        checkUserPreferences();
+        checkFabStatus();
+
         mTrailerAdapter = new TrailerAdapter(mTrailers);
         mCommentAdapter = new CommentAdapter(getActivity(), mComments);
 
@@ -221,7 +232,7 @@ public class DetailFragment extends Fragment {
         mFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveFavoriteMovieTask();
+                changeFavoriteMovieStatus();
             }
         });
 
@@ -229,17 +240,106 @@ public class DetailFragment extends Fragment {
         if(savedInstanceState != null){
 //            mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
         }else{
-            loadMovieFromDb();
-
-//            callMovieDetail(mMovieId);
+            switch (FlagPreference.getFlag(getContext())){
+                case FlagPreference.SORT_BY_FAVORITE:
+                    loadMovieFromDb();
+                    break;
+                case FlagPreference.SORT_BY_HIGHEST_RATED:
+                    callMovieDetail(mMovieId);
+                    break;
+                case FlagPreference.SORT_BY_POPULARITY:
+                    callMovieDetail(mMovieId);
+                    break;
+            }
         }
 
         return view;
     }
 
+    private void checkFabStatus() {
+        MovieProvider movieProvider = new MovieProvider(getContext());
+        if(movieProvider.isMovieExistOnDb(mMovieId)){
+            rotateFabDown();
+        }else{
+            rotateFabUp();
+        }
+        movieProvider.close();
+    }
+
+    private void changeFavoriteMovieStatus() {
+        MovieProvider movieProvider = new MovieProvider(getContext());
+        if(movieProvider.isMovieExistOnDb(mMovieId)){
+            removeFavoriteMovie();
+            rotateFabDown();
+        }else{
+            saveFavoriteMovie();
+            rotateFabUp();
+        }
+        movieProvider.close();
+    }
+
+    private void removeFavoriteMovie() {
+        MovieProvider movieProvider = new MovieProvider(getContext());
+        movieProvider.deleteMovie(mMovieId);
+        movieProvider.close();
+    }
+
+    private void rotateFabUp(){
+        AnimationSet animSet = new AnimationSet(true);
+        animSet.setInterpolator(new DecelerateInterpolator());
+        animSet.setFillAfter(true);
+        animSet.setFillEnabled(true);
+
+        final RotateAnimation animRotate = new RotateAnimation(0.0f, 0.0f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+
+        animRotate.setDuration(500);
+        animRotate.setFillAfter(true);
+        animSet.addAnimation(animRotate);
+
+        mFavorite.startAnimation(animSet);
+    }
+
+    private void rotateFabDown(){
+        AnimationSet animSet = new AnimationSet(true);
+        animSet.setInterpolator(new DecelerateInterpolator());
+        animSet.setFillAfter(true);
+        animSet.setFillEnabled(true);
+
+        final RotateAnimation animRotate = new RotateAnimation(0.0f, -180.0f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+
+        animRotate.setDuration(500);
+        animRotate.setFillAfter(true);
+        animSet.addAnimation(animRotate);
+
+        mFavorite.startAnimation(animSet);
+    }
+
+
+
+    private void checkUserPreferences() {
+        switch (FlagPreference.getFlag(getContext())){
+            case FlagPreference.SORT_BY_FAVORITE:
+                mTrailerContainer.setVisibility(View.GONE);
+                mCommentContainer.setVisibility(View.GONE);
+                break;
+            case FlagPreference.SORT_BY_HIGHEST_RATED:
+                mTrailerContainer.setVisibility(View.VISIBLE);
+                mCommentContainer.setVisibility(View.VISIBLE);
+                break;
+            case FlagPreference.SORT_BY_POPULARITY:
+                mTrailerContainer.setVisibility(View.VISIBLE);
+                mCommentContainer.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
     private void loadMovieFromDb(){
         MovieProvider movieProvider = new MovieProvider(getContext());
-        MovieDetail movie = movieProvider.getMovie(mMovieId);
+        MovieDetail movie = movieProvider.getMovieDetail(mMovieId);
         movieProvider.close();
 
         String posterPath = Environment.getExternalStorageDirectory().getAbsolutePath()
@@ -271,7 +371,7 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    private void saveFavoriteMovieTask() {
+    private void saveFavoriteMovie() {
         String posterPath = savePosterToStorage();
         String backdropPath = saveBackdropToStorage();
         if(posterPath != null && backdropPath != null){

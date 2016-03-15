@@ -1,6 +1,8 @@
 package com.aldoapps.popularmovies;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +10,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aldoapps.popularmovies.data.FlagPreference;
 import com.aldoapps.popularmovies.model.discover.Movie;
+import com.aldoapps.popularmovies.util.MovieConst;
 import com.aldoapps.popularmovies.util.UrlUtil;
 import com.squareup.picasso.Picasso;
 
@@ -25,12 +29,17 @@ public class MoviePosterAdapter extends BaseAdapter{
     private Context mContext;
     private List<Movie> mMovies;
     private LayoutInflater mInflater;
+    private boolean isFavorite = false;
 
     public MoviePosterAdapter(Context context, List<Movie> movies){
         mContext = context;
         mMovies = movies;
 
         mInflater = LayoutInflater.from(context);
+    }
+
+    public void setIsFavorite(boolean flag){
+        isFavorite = flag;
     }
 
     @Override
@@ -61,9 +70,16 @@ public class MoviePosterAdapter extends BaseAdapter{
             cell = (MovieViewHolder) convertView.getTag();
         }
 
-        Picasso.with(mContext)
-                .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
-                .into(cell.moviePoster);
+        if(isFavorite) {
+
+            String posterPath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + MovieConst.DIR_NAME + "/" + String.valueOf(movie.getId()) + ".png";
+            cell.moviePoster.setImageDrawable(Drawable.createFromPath(posterPath));
+        }else{
+            Picasso.with(mContext)
+                    .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
+                    .into(cell.moviePoster);
+        }
 
         cell.movieName.setText(movie.getTitle());
 
