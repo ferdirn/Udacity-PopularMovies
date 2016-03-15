@@ -12,7 +12,7 @@ import android.text.format.DateFormat;
 public class MovieContract {
 
     public static final String CONTENT_AUTHORITY = "com.aldoapps.popularmovies";
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY);
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_MOVIE = "movie";
 
     public static final class MovieEntry implements BaseColumns {
@@ -38,7 +38,8 @@ public class MovieContract {
         public static final String COL7_VOTE_COUNT = "vote_count"; // INT
         public static final String COL8_POPULARITY = "popularity";
         public static final String COL9_TAGLINE = "tagline";
-        public static final String COL10_OVERVIEW = "overview";
+        public static final String COL10_BUDGET = "budget";
+        public static final String COL11_OVERVIEW = "overview";
 
         public static final Uri buildMovieUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);

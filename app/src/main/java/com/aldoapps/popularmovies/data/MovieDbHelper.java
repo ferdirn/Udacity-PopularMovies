@@ -14,25 +14,22 @@ public class MovieDbHelper extends SQLiteOpenHelper {
             + MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " // id for sqlite db (auto-inc)
             + MovieContract.MovieEntry.COL0_MOVIE_ID + " INTEGER NOT NULL, " // id from tmdb
             + MovieContract.MovieEntry.COL1_POSTER + " TEXT NOT NULL, "
-            + MovieContract.MovieEntry.COL2_BACKDROP + " TEXT NOT NULL, "
+            + MovieContract.MovieEntry.COL2_BACKDROP + " TEXT, "
             + MovieContract.MovieEntry.COL3_TITLE + " TEXT NOT NULL, "
-            + MovieContract.MovieEntry.COL4_YEAR + " INTEGER NOT NULL, "
+            + MovieContract.MovieEntry.COL4_YEAR + " TEXT NOT NULL, "
             + MovieContract.MovieEntry.COL5_RUNTIME + " INTEGER NOT NULL, "
             + MovieContract.MovieEntry.COL6_VOTE_AVERAGE + " REAL NOT NULL, "
             + MovieContract.MovieEntry.COL7_VOTE_COUNT + " INTEGER NOT NULL, "
             + MovieContract.MovieEntry.COL8_POPULARITY + " REAL NOT NULL, "
-            + MovieContract.MovieEntry.COL9_TAGLINE + " TEXT NOT NULL, "
-            + MovieContract.MovieEntry.COL10_OVERVIEW + " TEXT NOT NULL "
+            + MovieContract.MovieEntry.COL9_TAGLINE + " TEXT, "
+            + MovieContract.MovieEntry.COL10_BUDGET + " INTEGER, " // could be null
+            + MovieContract.MovieEntry.COL11_OVERVIEW + " TEXT NOT NULL "
             + " );";
 
     // Changing database schema requires you to change DB Version
     private static final int DATABASE_VERSION = 1;
 
     public static final String DATABASE_NAME = "popularmovies.db";
-
-    public MovieDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
-    }
 
     public MovieDbHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

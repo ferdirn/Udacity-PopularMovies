@@ -2,6 +2,7 @@ package com.aldoapps.popularmovies;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -15,9 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +23,7 @@ import android.widget.Toast;
 
 import com.aldoapps.popularmovies.adapter.CommentAdapter;
 import com.aldoapps.popularmovies.adapter.TrailerAdapter;
+import com.aldoapps.popularmovies.data.MovieProvider;
 import com.aldoapps.popularmovies.model.movie_detail.MovieDetail;
 import com.aldoapps.popularmovies.model.review.Review;
 import com.aldoapps.popularmovies.model.review.ReviewResponse;
@@ -41,11 +40,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -106,7 +103,7 @@ public class DetailFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    public void enqueueFetchMovieDetail(final int movieId){
+    public void callMovieDetail(final int movieId){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MovieConst.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -140,9 +137,9 @@ public class DetailFragment extends Fragment {
                 mRating.setText(String.valueOf(movie.getVoteAverage()));
                 Formatter formatter = new Formatter();
                 mPopularity.setText(formatter.format("%.2f", movie.getPopularity()).toString());
-                if(movie.getBudget() == 0){
+                if (movie.getBudget() == 0) {
                     mBudget.setVisibility(View.GONE);
-                }else{
+                } else {
                     DecimalFormat customDF = new DecimalFormat("#,###");
                     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
                     symbols.setDecimalSeparator(',');
@@ -232,13 +229,100 @@ public class DetailFragment extends Fragment {
         if(savedInstanceState != null){
 //            mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
         }else{
-            enqueueFetchMovieDetail(mMovieId);
+            loadMovieFromDb();
+
+//            callMovieDetail(mMovieId);
         }
 
         return view;
     }
 
+    private void loadMovieFromDb(){
+        MovieProvider movieProvider = new MovieProvider(getContext());
+        MovieDetail movie = movieProvider.getMovie(mMovieId);
+        movieProvider.close();
+
+        String posterPath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + MovieConst.DIR_NAME + "/" + String.valueOf(movie.getId()) + ".png";
+
+        String backdropPath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + MovieConst.DIR_NAME + MovieConst.DIR_NAME_BACKDROP + "/"
+                + String.valueOf(movie.getId()) + ".png";
+
+        mPoster.setImageDrawable(Drawable.createFromPath(posterPath));
+        mBackdrop.setImageDrawable(Drawable.createFromPath(backdropPath));
+
+        mCollapsingToolbar.setTitle(movie.getTitle());
+        mYear.setText(movie.getReleaseYear());
+        mDuration.setText(getString(R.string.duration, movie.getRuntime()));
+        mSummary.setText(movie.getOverview());
+        mRating.setText(String.valueOf(movie.getVoteAverage()));
+        Formatter formatter = new Formatter();
+        mPopularity.setText(formatter.format("%.2f", movie.getPopularity()).toString());
+        if (movie.getBudget() == 0) {
+            mBudget.setVisibility(View.GONE);
+        } else {
+            DecimalFormat customDF = new DecimalFormat("#,###");
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            symbols.setDecimalSeparator(',');
+            symbols.setGroupingSeparator('.');
+            customDF.setDecimalFormatSymbols(symbols);
+            mBudget.setText(customDF.format(movie.getBudget()));
+        }
+    }
+
     private void saveFavoriteMovieTask() {
+        String posterPath = savePosterToStorage();
+        String backdropPath = saveBackdropToStorage();
+        if(posterPath != null && backdropPath != null){
+            Toast.makeText(getActivity(), "Saved!", Toast.LENGTH_SHORT).show();
+        }
+
+        MovieProvider movieProvider = new MovieProvider(getActivity());
+        movieProvider.insertMovie(mMovie, posterPath, backdropPath);
+        movieProvider.close();
+    }
+
+    private String saveBackdropToStorage() {
+        Bitmap bitmap;
+        OutputStream outputStream;
+
+        bitmap = ((BitmapDrawable) mBackdrop.getDrawable()).getBitmap();
+
+        File filePath = Environment.getExternalStorageDirectory();
+        File backdropDir = new File(filePath.getAbsolutePath()
+                + MovieConst.DIR_NAME
+                + MovieConst.DIR_NAME_BACKDROP);
+        if(!backdropDir.exists()){
+            backdropDir.mkdir();
+        }
+
+        File backdropFile = new File(backdropDir, String.valueOf(mMovie.getId()) + ".png");
+
+        boolean isSaveSuccessful;
+
+        try{
+            outputStream = new FileOutputStream(backdropFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, MovieConst.COMPRESSION_RATE, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            isSaveSuccessful = true;
+        }catch (IOException e){
+            isSaveSuccessful = false;
+            Log.e(PMApplication.TAG, e.getMessage());
+        }
+
+        if(isSaveSuccessful){
+            String completePath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + MovieConst.DIR_NAME + MovieConst.DIR_NAME_BACKDROP
+                    + "/" + String.valueOf(mMovie.getId()) + ".png";
+            return completePath;
+        }
+
+        return null;
+    }
+
+    private String savePosterToStorage() {
         Bitmap bitmap;
         OutputStream outputStream;
 
@@ -250,14 +334,17 @@ public class DetailFragment extends Fragment {
         if(!imageDir.exists()){
             imageDir.mkdir();
         }
+
         File imageFile = new File(imageDir, String.valueOf(mMovie.getId()) + ".png");
+
+        boolean isSaveSuccessful;
 
         try {
             outputStream = new FileOutputStream(imageFile);
             bitmap.compress(Bitmap.CompressFormat.PNG, MovieConst.COMPRESSION_RATE, outputStream);
             outputStream.flush();
             outputStream.close();
-            Toast.makeText(getActivity(), "Saved!", Toast.LENGTH_SHORT).show();
+            isSaveSuccessful = true;
 
             /**
              * I deliberately didn't broadcast Media Scanner
@@ -266,12 +353,17 @@ public class DetailFragment extends Fragment {
              * thus reducing the risk of user deleting posters.
              */
         } catch (IOException e) {
-            Log.d("asdf", "error karena " + e.getMessage());
+            isSaveSuccessful = false;
+            Log.e(PMApplication.TAG, e.getMessage());
         }
 
-//        MovieProvider movieProvider = new MovieProvider(getActivity());
-//        movieProvider.insertMovie(mMovie);
-//        movieProvider.close();
+        if(isSaveSuccessful){
+            String completePath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + MovieConst.DIR_NAME + "/" + String.valueOf(mMovie.getId()) + ".png";
+            return completePath;
+        }
+
+        return null;
     }
 
     @Override

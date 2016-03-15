@@ -28,6 +28,7 @@ public class MovieConst{
 
     public static final int DEFAULT_VALUE = 0;
     public static final String DIR_NAME = "/PopularMovies";
+    public static final String DIR_NAME_BACKDROP = "/Backdrop";
 
     // 100 Best Quality - 0 Worst Quality, .png is lossless, so this params will be ignored anyway.
     public static final int COMPRESSION_RATE = 80;
