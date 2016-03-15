@@ -5,10 +5,6 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
-
-    </style>
-
     <style name="Widget.CardContent" parent="android:Widget">
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
@@ -17,6 +13,32 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/gray_lighter</item>
+        <item name="android:textColor">@color/gray_dark</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/brand_main</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimaryDark">@color/brand_main_dark</item>
+    </style>
+
+    <style name="ThemeToolbarDarkOverflow" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_light</item>
+        <item name="actionMenuTextColor">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorSecondary">@color/abc_secondary_text_material_dark</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <style name="ThemeToolbarLightOverflow" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_light</item>
+        <item name="actionMenuTextColor">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorSecondary">@color/abc_secondary_text_material_dark</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
 
     <!--<style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">-->
 

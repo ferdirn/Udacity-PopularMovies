@@ -41,6 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainFragment extends Fragment {
 
     @Bind(R.id.grid_view) GridView mGridView;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     private MoviePosterAdapter mAdapter;
     private List<Movie> mMovieList = new ArrayList<>();
@@ -192,6 +193,9 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
+
+        mToolbar.setTitle(getString(R.string.app_name));
+        ((MainActivity) getActivity()).setSupportActionBar(mToolbar);
 
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
