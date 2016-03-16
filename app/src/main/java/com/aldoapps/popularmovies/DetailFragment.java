@@ -91,7 +91,7 @@ public class DetailFragment extends Fragment {
     private List<Review> mComments = new ArrayList<>();
     private Call<TrailerResponse> mCallTrailerDetail;
     private Call<ReviewResponse> mCallComments;
-
+    
     public static DetailFragment newInstance(int movieId){
         Bundle bundle = new Bundle();
         bundle.putInt(MovieConst.KEY, movieId);
@@ -270,10 +270,12 @@ public class DetailFragment extends Fragment {
         MovieProvider movieProvider = new MovieProvider(getContext());
         if(movieProvider.isMovieExistOnDb(mMovieId)){
             removeFavoriteMovie();
-            rotateFabDown();
+            Toast.makeText(getContext(), getString(R.string.removed_from_favorite), Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+            rotateFabUp();
         }else{
             saveFavoriteMovie();
-            rotateFabUp();
+            rotateFabDown();
         }
         movieProvider.close();
     }
@@ -375,7 +377,7 @@ public class DetailFragment extends Fragment {
         String posterPath = savePosterToStorage();
         String backdropPath = saveBackdropToStorage();
         if(posterPath != null && backdropPath != null){
-            Toast.makeText(getActivity(), "Saved!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.saved_to_favorite), Toast.LENGTH_SHORT).show();
         }
 
         MovieProvider movieProvider = new MovieProvider(getActivity());
