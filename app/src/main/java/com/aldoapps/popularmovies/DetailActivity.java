@@ -40,18 +40,4 @@ public class DetailActivity extends AppCompatActivity {
         }
 
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        Log.d("asdf", "Detail Activity on Pause called");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Log.d("asdf", "Detail Activity on Destroy called");
-    }
 }

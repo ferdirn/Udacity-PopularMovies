@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
@@ -114,7 +115,7 @@ public class DetailFragment extends Fragment {
 
         mProgressDialog = new ProgressDialog(getContext());
         mProgressDialog.setMessage(getString(R.string.fetch_movie_detail));
-        mProgressDialog.show();
+//        mProgressDialog.show();
     }
 
     public void callMovieDetail(final int movieId){
@@ -262,8 +263,6 @@ public class DetailFragment extends Fragment {
         MovieProvider movieProvider = new MovieProvider(getContext());
         if(movieProvider.isMovieExistOnDb(mMovieId)){
             rotateFabDown();
-        }else{
-            rotateFabUp();
         }
         movieProvider.close();
     }
@@ -272,9 +271,8 @@ public class DetailFragment extends Fragment {
         MovieProvider movieProvider = new MovieProvider(getContext());
         if(movieProvider.isMovieExistOnDb(mMovieId)){
             removeFavoriteMovie();
-            Toast.makeText(getContext(), getString(R.string.removed_from_favorite), Toast.LENGTH_SHORT).show();
             getActivity().finish();
-            rotateFabUp();
+            Toast.makeText(getContext(), getString(R.string.removed_from_favorite), Toast.LENGTH_SHORT).show();
         }else{
             saveFavoriteMovie();
             rotateFabDown();
@@ -286,23 +284,6 @@ public class DetailFragment extends Fragment {
         MovieProvider movieProvider = new MovieProvider(getContext());
         movieProvider.deleteMovie(mMovieId);
         movieProvider.close();
-    }
-
-    private void rotateFabUp(){
-        AnimationSet animSet = new AnimationSet(true);
-        animSet.setInterpolator(new DecelerateInterpolator());
-        animSet.setFillAfter(true);
-        animSet.setFillEnabled(true);
-
-        final RotateAnimation animRotate = new RotateAnimation(0.0f, 0.0f,
-                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
-                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
-
-        animRotate.setDuration(500);
-        animRotate.setFillAfter(true);
-        animSet.addAnimation(animRotate);
-
-        mFavorite.startAnimation(animSet);
     }
 
     private void rotateFabDown(){
@@ -321,8 +302,6 @@ public class DetailFragment extends Fragment {
 
         mFavorite.startAnimation(animSet);
     }
-
-
 
     private void checkUserPreferences() {
         switch (FlagPreference.getFlag(getContext())){

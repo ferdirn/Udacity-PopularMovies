@@ -21,7 +21,7 @@
     <string name="favorite_movie">Favorite Movie</string>
     <string name="API_KEY">bc038bb869a181d827bb98836dadeb23</string>
     <string name="duration">%1$d minutes</string>
-    <string name="removed_from_favorite">Removed from Favorite</string>
+    <string name="removed_from_favorite">Removed from favorite movie</string>
     <string name="saved_to_favorite">Saved to Favorite</string>
     <string name="fetch_movie_detail">Get movie information..</string>
 </resources>

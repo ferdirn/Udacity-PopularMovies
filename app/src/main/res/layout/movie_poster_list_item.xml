@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="250dp">
+
+    <!--
+        FrameLayout might looks useless, but I do this on purpose.
+        This is a simple trick to make padding on GridView item works.
+    -->
 
     <RelativeLayout
         android:layout_margin="@dimen/padding_small"
@@ -32,4 +37,4 @@
 
     </RelativeLayout>
 
-</LinearLayout>
+</FrameLayout>
