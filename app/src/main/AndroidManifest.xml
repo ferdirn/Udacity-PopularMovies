@@ -27,7 +27,6 @@
         </activity>
 
         <activity android:name=".DetailActivity"
-            android:label="@string/movie_detail"
                   android:configChanges="orientation|keyboardHidden"
                   android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme"

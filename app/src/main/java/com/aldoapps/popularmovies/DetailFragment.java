@@ -1,5 +1,6 @@
 package com.aldoapps.popularmovies;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -79,7 +80,6 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.comment_container) View mCommentContainer;
     @Bind(R.id.trailer_container) View mTrailerContainer;
 
-    private MovieConst mMovieConst;
     private int mMovieId = 0;
     private MovieDetail mMovie = null;
     private TrailerAdapter mTrailerAdapter;
@@ -91,7 +91,9 @@ public class DetailFragment extends Fragment {
     private List<Review> mComments = new ArrayList<>();
     private Call<TrailerResponse> mCallTrailerDetail;
     private Call<ReviewResponse> mCallComments;
-    
+
+    private ProgressDialog mProgressDialog;
+
     public static DetailFragment newInstance(int movieId){
         Bundle bundle = new Bundle();
         bundle.putInt(MovieConst.KEY, movieId);
@@ -109,6 +111,10 @@ public class DetailFragment extends Fragment {
         }
 
         setHasOptionsMenu(true);
+
+        mProgressDialog = new ProgressDialog(getContext());
+        mProgressDialog.setMessage(getString(R.string.fetch_movie_detail));
+        mProgressDialog.show();
     }
 
     public void callMovieDetail(final int movieId){
@@ -125,11 +131,7 @@ public class DetailFragment extends Fragment {
             public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
                 MovieDetail movie = response.body();
                 mMovie = movie;
-                String completePath = Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + MovieConst.DIR_NAME + "/" + String.valueOf(mMovie.getId()) + ".png";
-                File file = new File(completePath, String.valueOf(mMovie.getId()) + ".png");
-//                mPoster.setImageDrawable(Drawable.createFromPath(file.getAbsolutePath()));
-//                mPoster.setImageDrawable(Drawable.createFromPath(completePath));
+
                 Picasso.with(getContext())
                         .load(UrlUtil.generatePosterUrl(movie.getPosterPath()))
                         .into(mPoster);
