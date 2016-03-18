@@ -175,8 +175,15 @@ public class DetailFragment extends Fragment {
                 mTrailers.clear();
                 for (Trailer trailer : response.body().getResults()) {
                     mTrailers.add(trailer);
-                    mTrailerAdapter.notifyDataSetChanged();
                 }
+                mTrailerAdapter.notifyDataSetChanged();
+
+                if (response.body().getResults().size() == 0) {
+                    mTrailerContainer.setVisibility(View.GONE);
+                } else {
+                    mTrailerContainer.setVisibility(View.VISIBLE);
+                }
+
             }
 
             @Override
@@ -196,6 +203,13 @@ public class DetailFragment extends Fragment {
                     mComments.add(review);
                 }
                 mCommentAdapter.notifyDataSetChanged();
+
+                if (response.body().getResults().size() == 0) {
+                    mCommentContainer.setVisibility(View.GONE);
+                } else {
+                    mCommentContainer.setVisibility(View.VISIBLE);
+                }
+
             }
 
             @Override

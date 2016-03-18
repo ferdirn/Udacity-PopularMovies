@@ -176,7 +176,7 @@ public class MainFragment extends Fragment {
             switch (FlagPreference.getFlag(getContext())){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
                     mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
-                    call = tmdbApi.discoverMovies(MovieConst.SORT_BY_FAVORITE_DESC,
+                    call = tmdbApi.discoverMovies(MovieConst.SORT_BY_HIGHEST_RATED_DESC,
                             getResources().getString(R.string.API_KEY),
                             MovieConst.VOTE_AVERAGE_VALUE,
                             MovieConst.VOTE_COUNT_VALUE);
@@ -197,7 +197,7 @@ public class MainFragment extends Fragment {
                         mAdapter.notifyDataSetChanged();
 
                         mIsFinished = true;
-                        mCurrentPage = 1;
+                        mCurrentPage = 2;
                         mTotalPages = response.body().getTotalPages();
 
                         if(mTotalPages > 1){
@@ -207,7 +207,7 @@ public class MainFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<DiscoverResponse> call, Throwable t) {
-                        mCurrentPage = 1;
+                        mCurrentPage = 2;
                         mIsFinished = true;
                         Toast.makeText(getActivity(),
                                 "Failed to fetch data ", Toast.LENGTH_SHORT).show();
