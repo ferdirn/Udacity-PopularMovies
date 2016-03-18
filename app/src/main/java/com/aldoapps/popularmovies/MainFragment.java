@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import com.aldoapps.popularmovies.data.MovieProvider;
 import com.aldoapps.popularmovies.model.discover.DiscoverResponse;
 import com.aldoapps.popularmovies.model.discover.Movie;
 import com.aldoapps.popularmovies.util.MovieConst;
+import com.paginate.Paginate;
 
 import org.w3c.dom.Text;
 
@@ -52,6 +54,11 @@ public class MainFragment extends Fragment {
 
     private MoviePosterAdapter mAdapter;
     private List<Movie> mMovieList = new ArrayList<>();
+
+    private int mCurrentPage = 2;
+    private boolean mIsFinished = false;
+    private Paginate mPaginate;
+    private int mTotalPages = 1;
 
     public MainFragment() { }
 
@@ -86,6 +93,11 @@ public class MainFragment extends Fragment {
 
     private void showFavoriteList() {
         mToolbar.setTitle(getString(R.string.app_name) + " (Favorite) ");
+
+        if(mPaginate != null){
+            mPaginate.unbind();
+        }
+
         FlagPreference.setToFavorite(getContext());
         MovieProvider movieProvider = new MovieProvider(getContext());
         mMovieList.clear();
@@ -145,6 +157,13 @@ public class MainFragment extends Fragment {
 
     private void executeMovieTask() {
         if(isNetworkAvailable()){
+            mMovieList.clear();
+            mAdapter.notifyDataSetChanged();
+            if(mPaginate != null){
+                mPaginate.unbind();
+                mPaginate.setHasMoreDataToLoad(false);
+            }
+
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MovieConst.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
@@ -171,17 +190,131 @@ public class MainFragment extends Fragment {
             }
 
             if (call != null) {
-                Log.d("asdf", "panggilan: " + call.request().toString());
                 call.enqueue(new Callback<DiscoverResponse>() {
                     @Override
                     public void onResponse(Call<DiscoverResponse> call, Response<DiscoverResponse> response) {
-                        mMovieList.clear();
                         mMovieList.addAll(response.body().getMovies());
                         mAdapter.notifyDataSetChanged();
+
+                        mIsFinished = true;
+                        mCurrentPage = 1;
+                        mTotalPages = response.body().getTotalPages();
+
+                        if(mTotalPages > 1){
+                            paginateNextPage();
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<DiscoverResponse> call, Throwable t) {
+                        mCurrentPage = 1;
+                        mIsFinished = true;
+                        Toast.makeText(getActivity(),
+                                "Failed to fetch data ", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }else{
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.no_internet_message)
+                    .setTitle(R.string.no_internet_title)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+            builder.show();
+        }
+    }
+
+    private void paginateNextPage() {
+        Paginate.Callbacks paginateCallbacks = new Paginate.Callbacks() {
+            @Override
+            public void onLoadMore() {
+                executeMovieTaskNextPage();
+            }
+
+            @Override
+            public boolean isLoading() {
+                if(mCurrentPage == mTotalPages){
+                    mPaginate.setHasMoreDataToLoad(false);
+                    return false;
+                }
+
+                return !mIsFinished;
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
+                if(mCurrentPage == mTotalPages) {
+                    mPaginate.setHasMoreDataToLoad(false);
+                    return true;
+                }
+
+                return false;
+            }
+        };
+
+        mPaginate = Paginate.with(mGridView, paginateCallbacks)
+                .setLoadingTriggerThreshold(2)
+                .addLoadingListItem(true)
+                .build();
+    }
+
+    private void executeMovieTaskNextPage() {
+        if(isNetworkAvailable()){
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(MovieConst.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
+
+            Call<DiscoverResponse> call = null;
+
+            switch (FlagPreference.getFlag(getContext())){
+                case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
+                    mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
+                    call = tmdbApi.discoverMoviesPage(MovieConst.SORT_BY_FAVORITE_DESC,
+                            getResources().getString(R.string.API_KEY),
+                            MovieConst.VOTE_AVERAGE_VALUE,
+                            MovieConst.VOTE_COUNT_VALUE,
+                            mCurrentPage
+                            );
+                    break;
+                case MovieConst.SORT_BY_POPULARITY_DESC:
+                    mToolbar.setTitle(getString(R.string.app_name) + " (Popular) ");
+                    call = tmdbApi.discoverMoviesPage(MovieConst.SORT_BY_POPULARITY_DESC,
+                            getResources().getString(R.string.API_KEY),
+                            mCurrentPage
+                            );
+                    break;
+            }
+
+            // set flag is finished
+            mIsFinished = false;
+
+            if (call != null) {
+                call.enqueue(new Callback<DiscoverResponse>() {
+                    @Override
+                    public void onResponse(Call<DiscoverResponse> call, Response<DiscoverResponse> response) {
+                        mMovieList.addAll(response.body().getMovies());
+                        mAdapter.notifyDataSetChanged();
+                        mIsFinished = true;
+                        ++mCurrentPage;
+                    }
+
+                    @Override
+                    public void onFailure(Call<DiscoverResponse> call, Throwable t) {
+                        mIsFinished = true;
+                        ++mCurrentPage;
                         Toast.makeText(getActivity(),
                                 "Failed to fetch data ", Toast.LENGTH_SHORT).show();
                     }
