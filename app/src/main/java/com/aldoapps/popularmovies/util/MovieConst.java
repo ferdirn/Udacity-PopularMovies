@@ -16,9 +16,11 @@ public class MovieConst{
     public static final String API_KEY_PARAM = "api_key";
     public static final String VOTE_AVERAGE_PARAM = "vote_average.gte";
     public static final String VOTE_COUNT_PARAM = "vote_count.gte";
+    public static final String PAGE_PARAM = "page";
 
     public static final String SORT_BY_POPULARITY_DESC = "popularity.desc";
     public static final String SORT_BY_HIGHEST_RATED_DESC = "vote_average.desc";
+    public static final String SORT_BY_FAVORITE_DESC = "sort_by_favorite.desc"; // made up string
     public static final String VOTE_AVERAGE_VALUE = "8";
     public static final String VOTE_COUNT_VALUE = "1000";
 

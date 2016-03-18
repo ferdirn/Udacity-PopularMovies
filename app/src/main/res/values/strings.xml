@@ -24,4 +24,5 @@
     <string name="removed_from_favorite">Removed from favorite movie</string>
     <string name="saved_to_favorite">Saved to Favorite</string>
     <string name="fetch_movie_detail">Get movie information..</string>
+    <string name="no_movie">No movie to show</string>
 </resources>

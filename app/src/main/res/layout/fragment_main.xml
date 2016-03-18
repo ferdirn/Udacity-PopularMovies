@@ -16,14 +16,29 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         />
 
-    <GridView
-        android:id="@+id/grid_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:columnWidth="100dp"
-        android:numColumns="2"
-        android:gravity="center"
-        android:stretchMode="columnWidth"
-        />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_movie"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_gravity="center"
+            />
+
+        <GridView
+            android:id="@+id/grid_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnWidth="100dp"
+            android:numColumns="2"
+            android:gravity="center"
+            android:stretchMode="columnWidth"
+            />
+
+    </FrameLayout>
 
 </LinearLayout>

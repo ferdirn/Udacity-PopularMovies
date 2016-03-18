@@ -21,6 +21,12 @@ public interface TmdbApi {
                                             @Query(MovieConst.API_KEY_PARAM) String apiKey
     );
 
+    @GET("3/discover/movie")
+    Call<DiscoverResponse> discoverMoviesPage(@Query(MovieConst.SORT_BY_PARAM) String sortBy,
+                                            @Query(MovieConst.API_KEY_PARAM) String apiKey,
+                                              @Query(MovieConst.PAGE_PARAM) int pageNumber
+    );
+
     // sort by highest rated, require another two parameter
     // average votes and vote count (to make sure its not some
     // random movie with only a few people rate it 10) minimum of 1000 people
@@ -30,6 +36,16 @@ public interface TmdbApi {
                                                  @Query(MovieConst.VOTE_AVERAGE_PARAM) String voteAvg,
                                                  @Query(MovieConst.VOTE_COUNT_PARAM) String voteCount
     );
+
+    @GET("3/discover/movie")
+    Call<DiscoverResponse> discoverMoviesPage(@Query(MovieConst.SORT_BY_PARAM) String sortBy,
+                                                 @Query(MovieConst.API_KEY_PARAM) String apiKey,
+                                                 @Query(MovieConst.VOTE_AVERAGE_PARAM) String voteAvg,
+                                                 @Query(MovieConst.VOTE_COUNT_PARAM) String voteCount,
+                                              @Query(MovieConst.PAGE_PARAM) int pageNumber
+    );
+
+
 
     @GET("3/movie/{id}")
     Call<MovieDetail> getMovieDetail(@Path("id") int movieId,

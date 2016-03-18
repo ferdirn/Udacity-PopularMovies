@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aldoapps.popularmovies.data.FlagPreference;
@@ -26,6 +27,8 @@ import com.aldoapps.popularmovies.data.MovieProvider;
 import com.aldoapps.popularmovies.model.discover.DiscoverResponse;
 import com.aldoapps.popularmovies.model.discover.Movie;
 import com.aldoapps.popularmovies.util.MovieConst;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +48,10 @@ public class MainFragment extends Fragment {
 
     @Bind(R.id.grid_view) GridView mGridView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(android.R.id.empty) TextView mEmpty;
 
     private MoviePosterAdapter mAdapter;
     private List<Movie> mMovieList = new ArrayList<>();
-    private String mSortByValue = "";
 
     public MainFragment() { }
 
@@ -69,12 +72,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        switch (id){
+        switch (item.getItemId()){
             case R.id.action_settings:
                 showSortByDialogue();
                 break;
@@ -107,14 +105,12 @@ public class MainFragment extends Fragment {
 
                 switch (which) {
                     case 0:
-                        mSortByValue = MovieConst.SORT_BY_POPULARITY_DESC;
-                        executeMovieTask(MovieConst.SORT_BY_POPULARITY_DESC);
                         FlagPreference.setToPopularity(getContext());
+                        executeMovieTask();
                         break;
                     case 1:
-                        mSortByValue = MovieConst.SORT_BY_HIGHEST_RATED_DESC;
-                        executeMovieTask(MovieConst.SORT_BY_HIGHEST_RATED_DESC);
                         FlagPreference.setToHighestRated(getContext());
+                        executeMovieTask();
                         break;
                 }
             }
@@ -137,21 +133,17 @@ public class MainFragment extends Fragment {
                 break;
             case FlagPreference.SORT_BY_HIGHEST_RATED:
                 mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
-                mSortByValue = MovieConst.SORT_BY_POPULARITY_DESC;
-                executeMovieTask(MovieConst.SORT_BY_POPULARITY_DESC);
-                FlagPreference.setToPopularity(getContext());
+                executeMovieTask();
                 break;
             case FlagPreference.SORT_BY_POPULARITY:
                 mToolbar.setTitle(getString(R.string.app_name) + " (Popular) ");
-                mSortByValue = MovieConst.SORT_BY_POPULARITY_DESC;
-                executeMovieTask(MovieConst.SORT_BY_POPULARITY_DESC);
-                FlagPreference.setToPopularity(getContext());
+                executeMovieTask();
                 break;
         }
 
     }
 
-    private void executeMovieTask(String sortBy) {
+    private void executeMovieTask() {
         if(isNetworkAvailable()){
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MovieConst.BASE_URL)
@@ -162,17 +154,17 @@ public class MainFragment extends Fragment {
 
             Call<DiscoverResponse> call = null;
 
-            switch (sortBy){
+            switch (FlagPreference.getFlag(getContext())){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
                     mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
-                    call = tmdbApi.discoverMovies(sortBy,
+                    call = tmdbApi.discoverMovies(MovieConst.SORT_BY_FAVORITE_DESC,
                             getResources().getString(R.string.API_KEY),
                             MovieConst.VOTE_AVERAGE_VALUE,
                             MovieConst.VOTE_COUNT_VALUE);
                     break;
                 case MovieConst.SORT_BY_POPULARITY_DESC:
                     mToolbar.setTitle(getString(R.string.app_name) + " (Popular) ");
-                    call = tmdbApi.discoverMovies(sortBy,
+                    call = tmdbApi.discoverMovies(MovieConst.SORT_BY_POPULARITY_DESC,
                             getResources().getString(R.string.API_KEY)
                             );
                     break;
@@ -231,6 +223,7 @@ public class MainFragment extends Fragment {
         mToolbar.setTitle(getString(R.string.app_name));
         ((MainActivity) getActivity()).setSupportActionBar(mToolbar);
 
+
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -240,7 +233,7 @@ public class MainFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
+        mGridView.setEmptyView(mEmpty);
         return view;
     }
 }
