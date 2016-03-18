@@ -60,6 +60,10 @@ public class MainFragment extends Fragment {
     private Paginate mPaginate;
     private int mTotalPages = 1;
 
+    private Call<DiscoverResponse> mDiscoverCall = null;
+    private Call<DiscoverResponse> mDiscoverNextPageCall = null;
+
+
     public MainFragment() { }
 
     @Override
@@ -171,26 +175,24 @@ public class MainFragment extends Fragment {
 
             TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
 
-            Call<DiscoverResponse> call = null;
-
             switch (FlagPreference.getFlag(getContext())){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
                     mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
-                    call = tmdbApi.discoverMovies(MovieConst.SORT_BY_HIGHEST_RATED_DESC,
+                    mDiscoverCall = tmdbApi.discoverMovies(MovieConst.SORT_BY_HIGHEST_RATED_DESC,
                             getResources().getString(R.string.API_KEY),
                             MovieConst.VOTE_AVERAGE_VALUE,
                             MovieConst.VOTE_COUNT_VALUE);
                     break;
                 case MovieConst.SORT_BY_POPULARITY_DESC:
                     mToolbar.setTitle(getString(R.string.app_name) + " (Popular) ");
-                    call = tmdbApi.discoverMovies(MovieConst.SORT_BY_POPULARITY_DESC,
+                    mDiscoverCall = tmdbApi.discoverMovies(MovieConst.SORT_BY_POPULARITY_DESC,
                             getResources().getString(R.string.API_KEY)
                             );
                     break;
             }
 
-            if (call != null) {
-                call.enqueue(new Callback<DiscoverResponse>() {
+            if (mDiscoverCall != null) {
+                mDiscoverCall.enqueue(new Callback<DiscoverResponse>() {
                     @Override
                     public void onResponse(Call<DiscoverResponse> call, Response<DiscoverResponse> response) {
                         mMovieList.addAll(response.body().getMovies());
@@ -277,12 +279,10 @@ public class MainFragment extends Fragment {
 
             TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
 
-            Call<DiscoverResponse> call = null;
-
             switch (FlagPreference.getFlag(getContext())){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
                     mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
-                    call = tmdbApi.discoverMoviesPage(MovieConst.SORT_BY_FAVORITE_DESC,
+                    mDiscoverNextPageCall = tmdbApi.discoverMoviesPage(MovieConst.SORT_BY_FAVORITE_DESC,
                             getResources().getString(R.string.API_KEY),
                             MovieConst.VOTE_AVERAGE_VALUE,
                             MovieConst.VOTE_COUNT_VALUE,
@@ -291,7 +291,7 @@ public class MainFragment extends Fragment {
                     break;
                 case MovieConst.SORT_BY_POPULARITY_DESC:
                     mToolbar.setTitle(getString(R.string.app_name) + " (Popular) ");
-                    call = tmdbApi.discoverMoviesPage(MovieConst.SORT_BY_POPULARITY_DESC,
+                    mDiscoverNextPageCall = tmdbApi.discoverMoviesPage(MovieConst.SORT_BY_POPULARITY_DESC,
                             getResources().getString(R.string.API_KEY),
                             mCurrentPage
                             );
@@ -301,8 +301,8 @@ public class MainFragment extends Fragment {
             // set flag is finished
             mIsFinished = false;
 
-            if (call != null) {
-                call.enqueue(new Callback<DiscoverResponse>() {
+            if (mDiscoverNextPageCall != null) {
+                mDiscoverNextPageCall.enqueue(new Callback<DiscoverResponse>() {
                     @Override
                     public void onResponse(Call<DiscoverResponse> call, Response<DiscoverResponse> response) {
                         mMovieList.addAll(response.body().getMovies());
@@ -356,7 +356,6 @@ public class MainFragment extends Fragment {
         mToolbar.setTitle(getString(R.string.app_name));
         ((MainActivity) getActivity()).setSupportActionBar(mToolbar);
 
-
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -368,5 +367,18 @@ public class MainFragment extends Fragment {
         });
         mGridView.setEmptyView(mEmpty);
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        if(mDiscoverCall != null){
+            mDiscoverCall.cancel();
+        }
+
+        if(mDiscoverNextPageCall != null){
+            mDiscoverNextPageCall.cancel();
+        }
+
+        super.onPause();
     }
 }

@@ -1,6 +1,7 @@
 package com.aldoapps.popularmovies;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
@@ -92,6 +92,7 @@ public class DetailFragment extends Fragment {
     private List<Review> mComments = new ArrayList<>();
     private Call<TrailerResponse> mCallTrailerDetail;
     private Call<ReviewResponse> mCallComments;
+    private TmdbApi mTmdbApi;
 
     private ProgressDialog mProgressDialog;
 
@@ -115,18 +116,27 @@ public class DetailFragment extends Fragment {
 
         mProgressDialog = new ProgressDialog(getContext());
         mProgressDialog.setMessage(getString(R.string.fetch_movie_detail));
-//        mProgressDialog.show();
-    }
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                getActivity().finish();
+            }
+        });
 
-    public void callMovieDetail(final int movieId){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MovieConst.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        TmdbApi tmdbApi = retrofit.create(TmdbApi.class);
-        mCallMovieDetail = tmdbApi.getMovieDetail(movieId,
+        mTmdbApi = retrofit.create(TmdbApi.class);
+    }
+
+    public void fetchMovieDetail(){
+        mProgressDialog.show();
+
+        mCallMovieDetail = mTmdbApi.getMovieDetail(mMovieId,
                 getResources().getString(R.string.API_KEY));
+
         mCallMovieDetail.enqueue(new Callback<MovieDetail>() {
             @Override
             public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
@@ -158,41 +168,20 @@ public class DetailFragment extends Fragment {
                     customDF.setDecimalFormatSymbols(symbols);
                     mBudget.setText(customDF.format(movie.getBudget()));
                 }
+
+                fetchTrailer();
             }
 
             @Override
             public void onFailure(Call<MovieDetail> call, Throwable t) {
-
+                mProgressDialog.dismiss();
+                Toast.makeText(getContext(), "Failed to fetch movie", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-        mCallTrailerDetail = tmdbApi.getMovieTrailers(movieId,
-                getString(R.string.API_KEY));
-
-        mCallTrailerDetail.enqueue(new Callback<TrailerResponse>() {
-            @Override
-            public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
-                mTrailers.clear();
-                for (Trailer trailer : response.body().getResults()) {
-                    mTrailers.add(trailer);
-                }
-                mTrailerAdapter.notifyDataSetChanged();
-
-                if (response.body().getResults().size() == 0) {
-                    mTrailerContainer.setVisibility(View.GONE);
-                } else {
-                    mTrailerContainer.setVisibility(View.VISIBLE);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<TrailerResponse> call, Throwable t) {
-
-            }
-        });
-
-        mCallComments = tmdbApi.getMovieReviews(movieId,
+    private void fetchComments(){
+        mCallComments = mTmdbApi.getMovieReviews(mMovieId,
                 getString(R.string.API_KEY));
 
         mCallComments.enqueue(new Callback<ReviewResponse>() {
@@ -210,11 +199,43 @@ public class DetailFragment extends Fragment {
                     mCommentContainer.setVisibility(View.VISIBLE);
                 }
 
+                mProgressDialog.dismiss();
             }
 
             @Override
             public void onFailure(Call<ReviewResponse> call, Throwable t) {
+                mProgressDialog.dismiss();
+                Toast.makeText(getContext(), "Failed to fetch comments", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
+    private void fetchTrailer() {
+        mCallTrailerDetail = mTmdbApi.getMovieTrailers(mMovieId,
+                getString(R.string.API_KEY));
+
+        mCallTrailerDetail.enqueue(new Callback<TrailerResponse>() {
+            @Override
+            public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
+                mTrailers.clear();
+                for (Trailer trailer : response.body().getResults()) {
+                    mTrailers.add(trailer);
+                }
+                mTrailerAdapter.notifyDataSetChanged();
+
+                if (response.body().getResults().size() == 0) {
+                    mTrailerContainer.setVisibility(View.GONE);
+                } else {
+                    mTrailerContainer.setVisibility(View.VISIBLE);
+                }
+
+                fetchComments();
+            }
+
+            @Override
+            public void onFailure(Call<TrailerResponse> call, Throwable t) {
+                mProgressDialog.dismiss();
+                Toast.makeText(getContext(), "Failed to fetch trailer", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -256,18 +277,6 @@ public class DetailFragment extends Fragment {
         // if we already querying movie runtime, use restored bundle
         if(savedInstanceState != null){
 //            mDuration.setText(savedInstanceState.getString(MovieConst.MOVIE_RUNTIME));
-        }else{
-            switch (FlagPreference.getFlag(getContext())){
-                case FlagPreference.SORT_BY_FAVORITE:
-                    loadMovieFromDb();
-                    break;
-                case FlagPreference.SORT_BY_HIGHEST_RATED:
-                    callMovieDetail(mMovieId);
-                    break;
-                case FlagPreference.SORT_BY_POPULARITY:
-                    callMovieDetail(mMovieId);
-                    break;
-            }
         }
 
         return view;
@@ -471,6 +480,23 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        switch (FlagPreference.getFlag(getContext())){
+            case FlagPreference.SORT_BY_FAVORITE:
+                loadMovieFromDb();
+                break;
+            case FlagPreference.SORT_BY_HIGHEST_RATED:
+                fetchMovieDetail();
+                break;
+            case FlagPreference.SORT_BY_POPULARITY:
+                fetchMovieDetail();
+                break;
+        }
+    }
+
+    @Override
     public void onPause() {
         /**
          * We need to cancel all queue, because sometimes onResponse is called
@@ -488,7 +514,6 @@ public class DetailFragment extends Fragment {
         if(mCallComments != null){
             mCallComments.cancel();
         }
-
 
         super.onPause();
     }
