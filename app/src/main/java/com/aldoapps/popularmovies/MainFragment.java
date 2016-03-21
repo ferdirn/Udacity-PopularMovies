@@ -224,15 +224,17 @@ public class MainFragment extends Fragment {
                 mDiscoverCall.enqueue(new Callback<DiscoverResponse>() {
                     @Override
                     public void onResponse(Call<DiscoverResponse> call, Response<DiscoverResponse> response) {
-                        mMovieList.addAll(response.body().getMovies());
-                        mAdapter.notifyDataSetChanged();
+                        if(response.body() != null && response.body().getMovies() != null){
+                            mMovieList.addAll(response.body().getMovies());
+                            mAdapter.notifyDataSetChanged();
 
-                        mIsFinished = true;
-                        mCurrentPage = 2;
-                        mTotalPages = response.body().getTotalPages();
+                            mIsFinished = true;
+                            mCurrentPage = 2;
+                            mTotalPages = response.body().getTotalPages();
 
-                        if(mTotalPages > 1){
-                            paginateNextPage();
+                            if(mTotalPages > 1){
+                                paginateNextPage();
+                            }
                         }
                     }
 
@@ -336,10 +338,12 @@ public class MainFragment extends Fragment {
                 mDiscoverNextPageCall.enqueue(new Callback<DiscoverResponse>() {
                     @Override
                     public void onResponse(Call<DiscoverResponse> call, Response<DiscoverResponse> response) {
-                        mMovieList.addAll(response.body().getMovies());
-                        mAdapter.notifyDataSetChanged();
-                        mIsFinished = true;
-                        ++mCurrentPage;
+                        if(response.body() != null && response.body().getMovies() != null){
+                            mMovieList.addAll(response.body().getMovies());
+                            mAdapter.notifyDataSetChanged();
+                            mIsFinished = true;
+                            ++mCurrentPage;
+                        }
                     }
 
                     @Override

@@ -1,11 +1,14 @@
 package com.aldoapps.popularmovies;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -65,6 +68,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class DetailFragment extends Fragment {
 
+    private static final int REQUEST_CODE_FOR_PERMISSION = 16;
     @Bind(R.id.movie_poster) ImageView mPoster;
     @Bind(R.id.movie_year) TextView mYear;
     @Bind(R.id.movie_rating) TextView mRating;
@@ -322,6 +326,16 @@ public class DetailFragment extends Fragment {
     }
 
     private void changeFavoriteMovieStatus() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int hasPermission = getActivity()
+                    .checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if(hasPermission != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_CODE_FOR_PERMISSION);
+                return;
+            }
+        }
+
         if(MovieProvider.get(getContext()).isMovieExistOnDb(mMovieId)){
             if(MovieProvider.get(getContext()).deleteMovie(mMovieId)){
                 Toast.makeText(getContext(), getString(R.string.removed_from_favorite),
@@ -334,6 +348,24 @@ public class DetailFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode){
+            case REQUEST_CODE_FOR_PERMISSION:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    changeFavoriteMovieStatus();
+                }else{
+                    Toast.makeText(getActivity(), getString(R.string.failed_to_favorite),
+                            Toast.LENGTH_SHORT).show();
+                }
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    /**
+     * Doesn't work on JellyBean or lower
+     */
     private void rotateFabDown(){
         AnimationSet animSet = new AnimationSet(true);
         animSet.setInterpolator(new DecelerateInterpolator());
