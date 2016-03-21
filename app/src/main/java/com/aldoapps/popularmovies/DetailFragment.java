@@ -1,6 +1,7 @@
 package com.aldoapps.popularmovies;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -97,6 +98,24 @@ public class DetailFragment extends Fragment {
     private boolean mIsTwoPane = false;
 
     private ProgressDialog mProgressDialog;
+
+    private DetailCallback mCallback;
+
+    public interface DetailCallback {
+        void updateUI();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try{
+            mCallback = (DetailCallback) context;
+        }catch (ClassCastException e){
+            throw new ClassCastException(context.toString()
+                    + " must implement " + mCallback.toString());
+        }
+    }
 
     public static DetailFragment newInstance(int movieId, boolean isTwoPane){
         Bundle bundle = new Bundle();
@@ -304,17 +323,19 @@ public class DetailFragment extends Fragment {
 
     private void changeFavoriteMovieStatus() {
         if(MovieProvider.get(getContext()).isMovieExistOnDb(mMovieId)){
-            removeFavoriteMovie();
-            Toast.makeText(getContext(), getString(R.string.removed_from_favorite),
-                    Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-        }else{
+            if(MovieProvider.get(getContext()).deleteMovie(mMovieId)){
+                Toast.makeText(getContext(), getString(R.string.removed_from_favorite),
+                        Toast.LENGTH_SHORT).show();
+
+                if(!mIsTwoPane){
+                    getActivity().finish();
+                }else{
+                    mCallback.updateUI();
+                }
+            }
+        } else{
             saveFavoriteMovie();
         }
-    }
-
-    private void removeFavoriteMovie() {
-        MovieProvider.get(getContext()).deleteMovie(mMovieId);
     }
 
     private void rotateFabDown(){
@@ -352,8 +373,6 @@ public class DetailFragment extends Fragment {
     }
 
     private void loadMovieFromDb(){
-        Log.d("asdf", "movie id" + mMovieId);
-
         MovieDetail movie = MovieProvider.get(getContext()).getMovieDetail(mMovieId);
 
         String posterPath = Environment.getExternalStorageDirectory().getAbsolutePath()

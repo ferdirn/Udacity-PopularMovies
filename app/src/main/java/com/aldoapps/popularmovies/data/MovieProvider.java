@@ -74,9 +74,11 @@ public class MovieProvider {
         return isMovieExist;
     }
 
-    public void deleteMovie(int movieId){
-        mDatabase.delete(MovieEntry.TABLE_NAME, MovieEntry.COL0_MOVIE_ID + " = ?", new String[]{
+    public boolean deleteMovie(int movieId){
+        int result = mDatabase.delete(MovieEntry.TABLE_NAME, MovieEntry.COL0_MOVIE_ID + " = ?", new String[]{
                 String.valueOf(movieId)});
+
+        return (result != 0);
     }
 
     public MovieDetail getMovieDetail(int movieId){
@@ -87,8 +89,6 @@ public class MovieProvider {
         if(movieCursor.moveToFirst()){
             movieDetail = movieCursor.getMovieDetail();
         }
-
-        Log.d("asdf", "is movie detail null? " + (movieDetail == null));
 
         movieCursor.close();
         return movieDetail;

@@ -7,7 +7,8 @@ import android.util.Log;
 
 import com.aldoapps.popularmovies.util.MovieConst;
 
-public class MainActivity extends SingleFragmentActivity implements MainFragment.PosterCallback {
+public class MainActivity extends SingleFragmentActivity implements MainFragment.PosterCallback,
+        DetailFragment.DetailCallback {
 
     @Override
     protected Fragment createFragment() {
@@ -30,6 +31,23 @@ public class MainActivity extends SingleFragmentActivity implements MainFragment
             Intent intent = new Intent(this, DetailActivity.class);
             intent.putExtra(MovieConst.BUNDLE_KEY_MOVIE_ID, movieId);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    public void updateUI() {
+        MainFragment fragment = (MainFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.movie_poster_container);
+
+        if(fragment != null){
+            fragment.updateUI();
+
+            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.movie_detail_container);
+
+            if(detailFragment != null){
+                getSupportFragmentManager().beginTransaction().remove(detailFragment).commit();
+            }
         }
     }
 }

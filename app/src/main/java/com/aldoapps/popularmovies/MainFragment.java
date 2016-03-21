@@ -66,6 +66,13 @@ public class MainFragment extends Fragment {
         return new MainFragment();
     }
 
+    public void updateUI() {
+        // Only update when in Favorite section
+        if(FlagPreference.getFlag(getContext()).equals(FlagPreference.SORT_BY_FAVORITE)){
+            showFavoriteList();
+        }
+    }
+
     public interface PosterCallback {
         void onMoviePosterClicked(int movieId);
     }
