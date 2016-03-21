@@ -327,11 +327,7 @@ public class DetailFragment extends Fragment {
                 Toast.makeText(getContext(), getString(R.string.removed_from_favorite),
                         Toast.LENGTH_SHORT).show();
 
-                if(!mIsTwoPane){
-                    getActivity().finish();
-                }else{
-                    mCallback.updateUI();
-                }
+                mCallback.updateUI();
             }
         } else{
             saveFavoriteMovie();

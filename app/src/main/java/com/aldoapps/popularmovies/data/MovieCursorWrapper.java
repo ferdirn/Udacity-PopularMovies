@@ -27,4 +27,12 @@ public class MovieCursorWrapper extends CursorWrapper {
 
         return movie;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        close();
+
+        super.finalize();
+    }
+
 }

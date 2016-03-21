@@ -119,6 +119,7 @@ public class MovieProvider {
                 movieCursor.moveToNext();
             }
         }
+        movieCursor.close();
         return movieList;
     }
 

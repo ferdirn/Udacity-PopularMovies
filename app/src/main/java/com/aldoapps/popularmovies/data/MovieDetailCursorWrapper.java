@@ -37,4 +37,11 @@ public class MovieDetailCursorWrapper extends CursorWrapper {
 
         return movieDetail;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        close();
+
+        super.finalize();
+    }
 }

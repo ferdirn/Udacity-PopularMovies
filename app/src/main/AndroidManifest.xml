@@ -31,11 +31,6 @@
                   android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme"
             />
-
-        <activity android:name=".FavoriteMovieActivity"
-                android:label="@string/favorite_movie"
-                android:parentActivityName=".MainActivity"
-            />
     </application>
 
 </manifest>

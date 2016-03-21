@@ -13,7 +13,7 @@ import butterknife.ButterKnife;
 /**
  * Created by aldokelvianto on 03/09/2015.
  */
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DetailFragment.DetailCallback{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,5 +39,10 @@ public class DetailActivity extends AppCompatActivity {
                     .commit();
         }
 
+    }
+
+    @Override
+    public void updateUI() {
+        onBackPressed();
     }
 }
