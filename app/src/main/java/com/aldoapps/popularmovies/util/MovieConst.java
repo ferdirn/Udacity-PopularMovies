@@ -5,7 +5,8 @@ import android.os.Parcelable;
 
 public class MovieConst{
 
-    public static final String KEY = "movie";
+    public static final String BUNDLE_KEY_MOVIE_ID = "movie_id_bundle";
+    public static final String BUNDLE_KEY_IS_TWO_PANE = "is_two_pane_bundle";
 
     public static final String BASE_URL = "http://api.themoviedb.org/";
 

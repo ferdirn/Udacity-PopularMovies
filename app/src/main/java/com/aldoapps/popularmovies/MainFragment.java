@@ -10,14 +10,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -29,8 +27,6 @@ import com.aldoapps.popularmovies.model.discover.DiscoverResponse;
 import com.aldoapps.popularmovies.model.discover.Movie;
 import com.aldoapps.popularmovies.util.MovieConst;
 import com.paginate.Paginate;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +44,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class MainFragment extends Fragment {
 
+    public static final String TAG = MainFragment.class.getSimpleName();
     @Bind(R.id.grid_view) GridView mGridView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(android.R.id.empty) TextView mEmpty;
@@ -60,9 +57,18 @@ public class MainFragment extends Fragment {
     private Paginate mPaginate;
     private int mTotalPages = 1;
 
+    private PosterCallback mCallback;
+
     private Call<DiscoverResponse> mDiscoverCall = null;
     private Call<DiscoverResponse> mDiscoverNextPageCall = null;
 
+    public static MainFragment newInstance() {
+        return new MainFragment();
+    }
+
+    public interface PosterCallback {
+        void onMoviePosterClicked(int movieId);
+    }
 
     public MainFragment() { }
 
@@ -79,6 +85,24 @@ public class MainFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
 
         inflater.inflate(R.menu.menu_main, menu);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try{
+            mCallback = (PosterCallback) context;
+        }catch (ClassCastException e){
+            throw new ClassCastException(context.toString()
+                    + " must implement " + mCallback.toString());
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallback = null;
     }
 
     @Override
@@ -103,12 +127,10 @@ public class MainFragment extends Fragment {
         }
 
         FlagPreference.setToFavorite(getContext());
-        MovieProvider movieProvider = new MovieProvider(getContext());
         mMovieList.clear();
-        mMovieList.addAll(movieProvider.getAllMovie());
+        mMovieList.addAll(MovieProvider.get(getContext()).getAllMovie());
         mAdapter.setIsFavorite(true);
         mAdapter.notifyDataSetChanged();
-        movieProvider.close();
     }
 
     private void showSortByDialogue() {
@@ -209,10 +231,12 @@ public class MainFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<DiscoverResponse> call, Throwable t) {
-                        mCurrentPage = 2;
-                        mIsFinished = true;
-                        Toast.makeText(getActivity(),
-                                "Failed to fetch data ", Toast.LENGTH_SHORT).show();
+                        if(getActivity() != null){
+                            mCurrentPage = 2;
+                            mIsFinished = true;
+                            Toast.makeText(getActivity(),
+                                    "Failed to fetch data ", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -313,10 +337,13 @@ public class MainFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<DiscoverResponse> call, Throwable t) {
-                        mIsFinished = true;
-                        ++mCurrentPage;
-                        Toast.makeText(getActivity(),
-                                "Failed to fetch data ", Toast.LENGTH_SHORT).show();
+                        // sometimes this still getting called even though fragment is closed
+                        if(getActivity() != null){
+                            mIsFinished = true;
+                            ++mCurrentPage;
+                            Toast.makeText(getActivity(),
+                                    "Failed to fetch data ", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -360,9 +387,7 @@ public class MainFragment extends Fragment {
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(MovieConst.KEY, mMovieList.get(position).getId());
-                startActivity(intent);
+                mCallback.onMoviePosterClicked(mMovieList.get(position).getId());
             }
         });
         mGridView.setEmptyView(mEmpty);

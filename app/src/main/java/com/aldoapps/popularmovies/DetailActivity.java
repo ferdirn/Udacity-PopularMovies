@@ -23,7 +23,7 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if(getIntent() != null){
-            int movieId = getIntent().getIntExtra(MovieConst.KEY, MovieConst.DEFAULT_VALUE);
+            int movieId = getIntent().getIntExtra(MovieConst.BUNDLE_KEY_MOVIE_ID, MovieConst.DEFAULT_VALUE);
             startDetailFragment(movieId);
         }
     }

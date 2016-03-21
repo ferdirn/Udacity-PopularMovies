@@ -17,35 +17,37 @@ import java.util.List;
 
 /**
  * Created by aldokelvianto on 3/5/16.
+ * TODO: Use actual ContentProvider, for now just use SQLite implementation
  */
 public class MovieProvider {
+    private static MovieProvider sMovieProvider;
+
     private SQLiteDatabase mDatabase;
-    private MovieDbHelper mDbHelper;
+
+    public static MovieProvider get(Context context){
+        if(sMovieProvider == null){
+            sMovieProvider = new MovieProvider(context);
+        }
+
+        return sMovieProvider;
+    }
 
     public MovieProvider(Context context){
-        mDbHelper = new MovieDbHelper(context);
-
-        try {
-            open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        mDatabase = new MovieDbHelper(context).getWritableDatabase();
     }
 
-    private void open() throws SQLException{
-        mDatabase = mDbHelper.getWritableDatabase();
+    public boolean addMovie(MovieDetail movieDetail){
+        ContentValues values = getMovieDetailContentValues(movieDetail);
+        long result = mDatabase.insert(MovieEntry.TABLE_NAME, null, values);
+        return result != -1;
     }
 
-    public void close(){
-        mDbHelper.close();
-        mDatabase.close();
-    }
-
-    public void insertMovie(MovieDetail movie, String posterPath, String backdropPath){
+    public ContentValues getMovieDetailContentValues(MovieDetail movie){
         ContentValues values = new ContentValues();
+
         values.put(MovieEntry.COL0_MOVIE_ID, movie.getId());
-        values.put(MovieEntry.COL1_POSTER, posterPath);
-        values.put(MovieEntry.COL2_BACKDROP, backdropPath);
+        values.put(MovieEntry.COL1_POSTER, String.valueOf(movie.getId()));
+        values.put(MovieEntry.COL2_BACKDROP, String.valueOf(movie.getId()));
         values.put(MovieEntry.COL3_TITLE, movie.getTitle());
         values.put(MovieEntry.COL4_YEAR, movie.getReleaseYear());
         values.put(MovieEntry.COL5_RUNTIME, movie.getRuntime());
@@ -56,18 +58,20 @@ public class MovieProvider {
         values.put(MovieEntry.COL10_BUDGET, movie.getBudget());
         values.put(MovieEntry.COL11_OVERVIEW, movie.getOverview());
 
-        mDatabase.insert(MovieEntry.TABLE_NAME, null, values);
+        return values;
     }
 
     public boolean isMovieExistOnDb(int movieId){
-        String whereClause = MovieEntry.COL0_MOVIE_ID + " = ? ";
-        Cursor cursor = mDatabase.query(MovieEntry.TABLE_NAME, null, whereClause,
-                new String[]{ String.valueOf(movieId)}, null, null, null);
-        if(cursor.moveToFirst()){
-            return true;
+        MovieDetailCursorWrapper movieCursor = queryMovieDetail(movieId);
+
+        boolean isMovieExist = false;
+
+        if(movieCursor.moveToFirst()){
+            isMovieExist = true;
         }
-        cursor.close();
-        return false;
+
+        movieCursor.close();
+        return isMovieExist;
     }
 
     public void deleteMovie(int movieId){
@@ -76,57 +80,54 @@ public class MovieProvider {
     }
 
     public MovieDetail getMovieDetail(int movieId){
-        String whereClause = MovieEntry.COL0_MOVIE_ID + " = ? ";
-        Cursor movieCursor = mDatabase.query(MovieEntry.TABLE_NAME, null, whereClause,
-                new String[]{ String.valueOf(movieId) },
-                null, null, null); //293660
-        movieCursor.moveToFirst();
-        MovieDetail movieDetail = convertCursorToMovieDetail(movieCursor);
+        MovieDetailCursorWrapper movieCursor = queryMovieDetail(movieId);
+
+        MovieDetail movieDetail = null;
+
+        if(movieCursor.moveToFirst()){
+            movieDetail = movieCursor.getMovieDetail();
+        }
+
+        Log.d("asdf", "is movie detail null? " + (movieDetail == null));
+
         movieCursor.close();
         return movieDetail;
     }
 
-    private MovieDetail convertCursorToMovieDetail(Cursor cursor) {
-        MovieDetail movieDetail = new MovieDetail();
+    public MovieDetailCursorWrapper queryMovieDetail(int movieId){
+        String whereClause = MovieEntry.COL0_MOVIE_ID + " = ? ";
+        Cursor cursor = mDatabase.query(MovieEntry.TABLE_NAME, null, whereClause,
+                new String[]{ String.valueOf(movieId) },
+                null, null, null); //293660
 
-        movieDetail.setId(cursor.getInt(1));
-        movieDetail.setPosterPath(cursor.getString(2));
-        movieDetail.setBackdropPath(cursor.getString(3));
-        movieDetail.setTitle(cursor.getString(4));
-        movieDetail.setReleaseDate(cursor.getString(5));
-        movieDetail.setRuntime(cursor.getInt(6));
-        movieDetail.setVoteAverage(cursor.getDouble(7));
-        movieDetail.setVoteCount(cursor.getInt(8));
-        movieDetail.setPopularity(cursor.getDouble(9));
-        movieDetail.setTagline(cursor.getString(10));
-        movieDetail.setBudget(cursor.getInt(11));
-        movieDetail.setOverview(cursor.getString(12));
-
-        return movieDetail;
+        return new MovieDetailCursorWrapper(cursor);
     }
 
-    private Movie convertCursorToMovie(Cursor cursor) {
-        Movie movie = new Movie();
-
-        movie.setId(cursor.getInt(1));
-        movie.setPosterPath(cursor.getString(2));
-        movie.setTitle(cursor.getString(4));
-
-        return movie;
+    private MovieCursorWrapper queryAllMovie(){
+        Cursor cursor = mDatabase.query(MovieEntry.TABLE_NAME, null,
+                null, new String[]{}, null, null, null);
+        return new MovieCursorWrapper(cursor);
     }
-
 
     public List<Movie> getAllMovie() {
-        Cursor movieCursor = mDatabase.query(MovieEntry.TABLE_NAME, null,
-                null, new String[]{}, null, null, null);
-
+        MovieCursorWrapper movieCursor = queryAllMovie();
         List<Movie> movieList = new ArrayList<>();
+
         if(movieCursor.moveToFirst()){
             while (!movieCursor.isAfterLast()){
-                movieList.add(convertCursorToMovie(movieCursor));
+                movieList.add(movieCursor.getMovie());
                 movieCursor.moveToNext();
             }
         }
         return movieList;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        if(mDatabase != null){
+            mDatabase.close();
+        }
+
+        super.finalize();
     }
 }

@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -93,12 +94,22 @@ public class DetailFragment extends Fragment {
     private Call<TrailerResponse> mCallTrailerDetail;
     private Call<ReviewResponse> mCallComments;
     private TmdbApi mTmdbApi;
+    private boolean mIsTwoPane = false;
 
     private ProgressDialog mProgressDialog;
 
+    public static DetailFragment newInstance(int movieId, boolean isTwoPane){
+        Bundle bundle = new Bundle();
+        bundle.putInt(MovieConst.BUNDLE_KEY_MOVIE_ID, movieId);
+        bundle.putBoolean(MovieConst.BUNDLE_KEY_IS_TWO_PANE, isTwoPane);
+        DetailFragment fragment = new DetailFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     public static DetailFragment newInstance(int movieId){
         Bundle bundle = new Bundle();
-        bundle.putInt(MovieConst.KEY, movieId);
+        bundle.putInt(MovieConst.BUNDLE_KEY_MOVIE_ID, movieId);
         DetailFragment fragment = new DetailFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -109,7 +120,8 @@ public class DetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if(getArguments() != null){
-            mMovieId = getArguments().getInt(MovieConst.KEY);
+            mMovieId = getArguments().getInt(MovieConst.BUNDLE_KEY_MOVIE_ID);
+            mIsTwoPane = getArguments().getBoolean(MovieConst.BUNDLE_KEY_IS_TWO_PANE);
         }
 
         setHasOptionsMenu(true);
@@ -252,8 +264,10 @@ public class DetailFragment extends Fragment {
         mTrailerAdapter = new TrailerAdapter(mTrailers);
         mCommentAdapter = new CommentAdapter(getActivity(), mComments);
 
-        ((DetailActivity) getActivity()).setSupportActionBar(mToolbar);
-        ((DetailActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(!mIsTwoPane){
+            ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         mCommentListView.setAdapter(mCommentAdapter);
         mCommentListView.setAdapter(new SlideExpandableListAdapter(
@@ -283,30 +297,24 @@ public class DetailFragment extends Fragment {
     }
 
     private void checkFabStatus() {
-        MovieProvider movieProvider = new MovieProvider(getContext());
-        if(movieProvider.isMovieExistOnDb(mMovieId)){
+        if(MovieProvider.get(getContext()).isMovieExistOnDb(mMovieId)){
             rotateFabDown();
         }
-        movieProvider.close();
     }
 
     private void changeFavoriteMovieStatus() {
-        MovieProvider movieProvider = new MovieProvider(getContext());
-        if(movieProvider.isMovieExistOnDb(mMovieId)){
+        if(MovieProvider.get(getContext()).isMovieExistOnDb(mMovieId)){
             removeFavoriteMovie();
+            Toast.makeText(getContext(), getString(R.string.removed_from_favorite),
+                    Toast.LENGTH_SHORT).show();
             getActivity().finish();
-            Toast.makeText(getContext(), getString(R.string.removed_from_favorite), Toast.LENGTH_SHORT).show();
         }else{
             saveFavoriteMovie();
-            rotateFabDown();
         }
-        movieProvider.close();
     }
 
     private void removeFavoriteMovie() {
-        MovieProvider movieProvider = new MovieProvider(getContext());
-        movieProvider.deleteMovie(mMovieId);
-        movieProvider.close();
+        MovieProvider.get(getContext()).deleteMovie(mMovieId);
     }
 
     private void rotateFabDown(){
@@ -344,9 +352,9 @@ public class DetailFragment extends Fragment {
     }
 
     private void loadMovieFromDb(){
-        MovieProvider movieProvider = new MovieProvider(getContext());
-        MovieDetail movie = movieProvider.getMovieDetail(mMovieId);
-        movieProvider.close();
+        Log.d("asdf", "movie id" + mMovieId);
+
+        MovieDetail movie = MovieProvider.get(getContext()).getMovieDetail(mMovieId);
 
         String posterPath = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + MovieConst.DIR_NAME + "/" + String.valueOf(movie.getId()) + ".png";
@@ -380,13 +388,13 @@ public class DetailFragment extends Fragment {
     private void saveFavoriteMovie() {
         String posterPath = savePosterToStorage();
         String backdropPath = saveBackdropToStorage();
-        if(posterPath != null && backdropPath != null){
+        boolean result = MovieProvider.get(getContext()).addMovie(mMovie);
+        if(posterPath != null && backdropPath != null && result){
             Toast.makeText(getActivity(), getString(R.string.saved_to_favorite), Toast.LENGTH_SHORT).show();
+            rotateFabDown();
+        }else{
+            Toast.makeText(getActivity(), getString(R.string.failed_to_favorite), Toast.LENGTH_SHORT).show();
         }
-
-        MovieProvider movieProvider = new MovieProvider(getActivity());
-        movieProvider.insertMovie(mMovie, posterPath, backdropPath);
-        movieProvider.close();
     }
 
     private String saveBackdropToStorage() {
