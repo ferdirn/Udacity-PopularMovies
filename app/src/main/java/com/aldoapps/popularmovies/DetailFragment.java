@@ -100,6 +100,7 @@ public class DetailFragment extends Fragment {
     private Call<ReviewResponse> mCallComments;
     private TmdbApi mTmdbApi;
     private boolean mIsTwoPane = false;
+    private Context mContext;
 
     private ProgressDialog mProgressDialog;
 
@@ -112,6 +113,8 @@ public class DetailFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        mContext = context;
 
         try{
             mCallback = (DetailCallback) context;
@@ -210,7 +213,7 @@ public class DetailFragment extends Fragment {
             @Override
             public void onFailure(Call<MovieDetail> call, Throwable t) {
                 mProgressDialog.dismiss();
-                Toast.makeText(getContext(), "Failed to fetch movie", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Failed to fetch movie", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -240,7 +243,7 @@ public class DetailFragment extends Fragment {
             @Override
             public void onFailure(Call<ReviewResponse> call, Throwable t) {
                 mProgressDialog.dismiss();
-                Toast.makeText(getContext(), "Failed to fetch comments", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Failed to fetch comments", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -270,7 +273,7 @@ public class DetailFragment extends Fragment {
             @Override
             public void onFailure(Call<TrailerResponse> call, Throwable t) {
                 mProgressDialog.dismiss();
-                Toast.makeText(getContext(), "Failed to fetch trailer", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Failed to fetch trailer", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -338,7 +341,7 @@ public class DetailFragment extends Fragment {
 
         if(MovieProvider.get(getContext()).isMovieExistOnDb(mMovieId)){
             if(MovieProvider.get(getContext()).deleteMovie(mMovieId)){
-                Toast.makeText(getContext(), getString(R.string.removed_from_favorite),
+                Toast.makeText(mContext, getString(R.string.removed_from_favorite),
                         Toast.LENGTH_SHORT).show();
 
                 mCallback.updateUI();
@@ -355,7 +358,7 @@ public class DetailFragment extends Fragment {
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     changeFavoriteMovieStatus();
                 }else{
-                    Toast.makeText(getActivity(), getString(R.string.failed_to_favorite),
+                    Toast.makeText(mContext, getString(R.string.failed_to_favorite),
                             Toast.LENGTH_SHORT).show();
                 }
             default:
@@ -437,10 +440,10 @@ public class DetailFragment extends Fragment {
         String backdropPath = saveBackdropToStorage();
         boolean result = MovieProvider.get(getContext()).addMovie(mMovie);
         if(posterPath != null && backdropPath != null && result){
-            Toast.makeText(getActivity(), getString(R.string.saved_to_favorite), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getString(R.string.saved_to_favorite), Toast.LENGTH_SHORT).show();
             rotateFabDown();
         }else{
-            Toast.makeText(getActivity(), getString(R.string.failed_to_favorite), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getString(R.string.failed_to_favorite), Toast.LENGTH_SHORT).show();
         }
     }
 
