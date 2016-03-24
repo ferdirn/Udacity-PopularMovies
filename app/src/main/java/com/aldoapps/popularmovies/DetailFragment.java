@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -100,6 +101,8 @@ public class DetailFragment extends Fragment {
     private Call<ReviewResponse> mCallComments;
     private TmdbApi mTmdbApi;
     private boolean mIsTwoPane = false;
+
+    // referencing context is important for configuration change
     private Context mContext;
 
     private ProgressDialog mProgressDialog;
@@ -114,7 +117,7 @@ public class DetailFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        mContext = context;
+        mContext = context.getApplicationContext();
 
         try{
             mCallback = (DetailCallback) context;
@@ -139,6 +142,13 @@ public class DetailFragment extends Fragment {
         DetailFragment fragment = new DetailFragment();
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // handle orientation change here
     }
 
     @Override

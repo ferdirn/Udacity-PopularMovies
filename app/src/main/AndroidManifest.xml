@@ -17,7 +17,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +26,10 @@
             </intent-filter>
         </activity>
 
+        <!-- Nothing to retain from configuration change, so I disabled it -->
+
         <activity android:name=".DetailActivity"
-                  android:configChanges="orientation|keyboardHidden"
+                  android:configChanges="orientation|keyboardHidden|screenSize"
                   android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme"
             />
