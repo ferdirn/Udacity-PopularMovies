@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="sort_by_array">
-        <item>Popularity</item>
-        <item>Highest rated</item>
+        <item>@string/popularity</item>
+        <item>@string/hi_rate</item>
     </string-array>
 </resources>

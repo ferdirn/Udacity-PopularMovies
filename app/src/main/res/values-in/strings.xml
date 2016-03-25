@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_sort_by">Urutkan Berdasarkan</string>
+    <string name="comment" translatable="false">Komentar</string>
+    <string name="duration">%1$d menit</string>
+    <string name="failed_to_favorite">Gagal menambahkan favorit</string>
+    <string name="favorite_movie">Film Favorit</string>
+    <string name="fetch_movie_detail">Mengunduh informasi film</string>
+    <string name="hello_world"></string>
+    <string name="mark_as_favorite">Tandai favorit</string>
+    <string name="movie_detail">Detail Film</string>
+    <string name="detail_activity" translatable="false">Detail Activity</string>
+    <string name="movie_summary"></string>
+    <string name="movie_rating"></string>
+    <string name="no_internet_message">Buka Pengaturan?</string>
+    <string name="no_internet_title">Internet Anda mengalami gangguan</string>
+    <string name="no_movie">Tidak ada film</string>
+    <string name="please_wait">Harap tunggu..</string>
+    <string name="saved_to_favorite">Disimpan dalam Favorit</string>
+    <string name="removed_from_favorite">Dihapus dalam film favorit</string>
+    <string name="sort_by">Urutkan Berdasarkan</string>
+    <string name="summary">Sinopsis</string>
+    <string name="trailer">Trailer</string>
+    <string name="trailers">Trailer</string>
+    <string name="popularity">Popularitas</string>
+    <string name="hi_rate">Rating</string>
+    <string name="high_rate">(Rating)</string>
+    <string name="favorite">(Favorit)</string>
+    <string name="by_popularity">(Populer)</string>
+
+</resources>

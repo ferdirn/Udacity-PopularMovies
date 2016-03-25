@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">Popular Movies</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name" translatable="false">Pop Movies</string>
+    <string name="hello_world" translatable="false">Hello world!</string>
     <string name="action_sort_by">Sort by</string>
-    <string name="movie_title">Chappie</string>
-    <string name="movie_year">2015</string>
-    <string name="movie_duration">120 minutes</string>
-    <string name="movie_rating">8.1 / 10</string>
+    <string name="movie_title" translatable="false">Chappie</string>
+    <string name="movie_year" translatable="false">2015</string>
+    <string name="movie_duration" translatable="false">120 minutes</string>
+    <string name="movie_rating" translatable="false">8.1 / 10</string>
     <string name="mark_as_favorite">mark as favorite</string>
     <string name="summary">Summary</string>
-    <string name="movie_summary">Every child comes into the world full of promise, and none more so than Chappie: he is gifted, special, a prodigy. Chappie he is a robot.</string>
+    <string name="movie_summary" translatable="false">Every child comes into the world full of promise, and none more so than Chappie: he is gifted, special, a prodigy. Chappie he is a robot.</string>
     <string name="trailers">Trailers</string>
     <string name="trailer">Trailer</string>
     <string name="detail_activity">Detail Activity</string>
@@ -25,4 +25,9 @@
     <string name="fetch_movie_detail">Get movie information..</string>
     <string name="no_movie">No movie to show</string>
     <string name="failed_to_favorite">Failed to add favorite</string>
+    <string name="popularity">Popularity</string>
+    <string name="hi_rate">Highest rated</string>
+    <string name="high_rate">(Hi Rate)</string>
+    <string name="favorite">(Favorite)</string>
+    <string name="by_popularity">(Popularity)</string>
 </resources>

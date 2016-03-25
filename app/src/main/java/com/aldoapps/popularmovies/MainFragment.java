@@ -136,7 +136,7 @@ public class MainFragment extends Fragment {
     }
 
     private void showFavoriteList() {
-        mToolbar.setTitle(getString(R.string.app_name) + " (Favorite) ");
+        mToolbar.setTitle(getString(R.string.app_name) + " " + getString(R.string.favorite));
 
         if(mPaginate != null){
             mPaginate.unbind();
@@ -182,15 +182,15 @@ public class MainFragment extends Fragment {
     public void loadMovieAccordingToPreference(){
         switch (FlagPreference.getFlag(getContext())){
             case FlagPreference.SORT_BY_FAVORITE:
-                mToolbar.setTitle(getString(R.string.app_name) + " (Favorite) ");
+                mToolbar.setTitle(getString(R.string.app_name) + " " + getString(R.string.favorite));
                 showFavoriteList();
                 break;
             case FlagPreference.SORT_BY_HIGHEST_RATED:
-                mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
+                mToolbar.setTitle(getString(R.string.app_name) + " " + getString(R.string.hi_rate));
                 executeMovieTask();
                 break;
             case FlagPreference.SORT_BY_POPULARITY:
-                mToolbar.setTitle(getString(R.string.app_name) + " (Popular) ");
+                mToolbar.setTitle(getString(R.string.app_name) + " " + getString(R.string.by_popularity));
                 executeMovieTask();
                 break;
         }
@@ -215,14 +215,14 @@ public class MainFragment extends Fragment {
 
             switch (FlagPreference.getFlag(getContext())){
                 case MovieConst.SORT_BY_HIGHEST_RATED_DESC:
-                    mToolbar.setTitle(getString(R.string.app_name) + " (Hi Rate) ");
+                    mToolbar.setTitle(getString(R.string.app_name) + " " + getString(R.string.high_rate));
                     mDiscoverCall = tmdbApi.discoverMovies(MovieConst.SORT_BY_HIGHEST_RATED_DESC,
                             getResources().getString(R.string.API_KEY),
                             MovieConst.VOTE_AVERAGE_VALUE,
                             MovieConst.VOTE_COUNT_VALUE);
                     break;
                 case MovieConst.SORT_BY_POPULARITY_DESC:
-                    mToolbar.setTitle(getString(R.string.app_name) + " (Popular) ");
+                    mToolbar.setTitle(getString(R.string.app_name) + " " + getString(R.string.by_popularity));
                     mDiscoverCall = tmdbApi.discoverMovies(MovieConst.SORT_BY_POPULARITY_DESC,
                             getResources().getString(R.string.API_KEY)
                             );
