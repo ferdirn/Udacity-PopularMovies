@@ -41,7 +41,7 @@ public class MovieContract {
         public static final String COL10_BUDGET = "budget";
         public static final String COL11_OVERVIEW = "overview";
 
-        public static final Uri buildMovieUri(long id){
+        public static Uri buildMovieUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }

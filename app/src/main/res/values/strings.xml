@@ -27,7 +27,7 @@
     <string name="failed_to_favorite">Failed to add favorite</string>
     <string name="popularity">Popularity</string>
     <string name="hi_rate">Highest rated</string>
-    <string name="high_rate">(Hi Rate)</string>
+    <string name="high_rate">(Rating)</string>
     <string name="favorite">(Favorite)</string>
     <string name="by_popularity">(Popularity)</string>
 </resources>

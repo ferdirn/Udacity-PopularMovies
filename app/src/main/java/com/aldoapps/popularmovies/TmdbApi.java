@@ -45,8 +45,6 @@ public interface TmdbApi {
                                               @Query(MovieConst.PAGE_PARAM) int pageNumber
     );
 
-
-
     @GET("3/movie/{id}")
     Call<MovieDetail> getMovieDetail(@Path("id") int movieId,
                                @Query(MovieConst.API_KEY_PARAM) String apiKey
